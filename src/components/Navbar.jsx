@@ -22,8 +22,10 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
   const links = [
     { path: '/', label: 'Home' },
     { path: '/explore', label: 'Explore' },
+    { path: '/dictionary', label: 'Dictionary' },
     { path: '/poets', label: 'Poets' },
     { path: '/community', label: 'Community' },
+    { path: '/notebook', label: 'Notebook' },
   ];
 
   return (
@@ -37,8 +39,8 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
               <path d="M7 12.5c.83 1.72 2.63 3 4.75 3 1.07 0 2.06-.33 2.88-.88" stroke="url(#solace-grad)" strokeWidth="1.2" strokeLinecap="round" fill="none"/>
               <defs>
                 <linearGradient id="solace-grad" x1="2" y1="2" x2="22" y2="22">
-                  <stop stopColor="#E8C97A"/>
-                  <stop offset="1" stopColor="#D4A853"/>
+                  <stop stopColor="#d8a48f"/>
+                  <stop offset="1" stopColor="#bb8588"/>
                 </linearGradient>
               </defs>
             </svg>
@@ -59,7 +61,7 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
 
           <div className="navbar-actions">
             <div className="navbar-search">
-              <Search size={16} color="#6B6880" />
+              <Search size={16} color="var(--text-muted)" />
               <input
                 type="text"
                 placeholder="Search poets, shayaris..."
@@ -95,7 +97,6 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
             key={link.path}
             to={link.path}
             className={`mobile-nav-link ${isActive(link.path) ? 'active' : ''}`}
-            style={isActive(link.path) ? { color: '#D4A853' } : {}}
           >
             {link.label}
           </Link>

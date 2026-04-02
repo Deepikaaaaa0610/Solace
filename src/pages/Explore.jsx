@@ -1,35 +1,41 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import ShayariCard from '../components/ShayariCard';
 import { getAllWorks } from '../data/poets';
-import { categories } from '../data/shayaris';
 
-export default function Explore({ searchQuery }) {
-  const [activeTag, setActiveTag] = useState('All');
-  const allWorks = getAllWorks();
+export default function Explore({ searchQuery, onSaveToNotebook }) {
+  const [searchParams] = useSearchParams();
+  const tagFromUrl = searchParams.get('tag');
+  const [activeTag, setActiveTag] = useState(tagFromUrl || 'All');
+  const allWorks = useMemo(() => getAllWorks(), []);
+
+  useEffect(() => {
+    setActiveTag(tagFromUrl || 'All');
+  }, [tagFromUrl]);
 
   const filteredWorks = useMemo(() => {
     let results = allWorks;
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      results = results.filter(w =>
+      results = results.filter((w) =>
         w.text.toLowerCase().includes(q) ||
         (w.roman && w.roman.toLowerCase().includes(q)) ||
         w.poetName.toLowerCase().includes(q) ||
         w.title.toLowerCase().includes(q) ||
-        (w.tags && w.tags.some(t => t.toLowerCase().includes(q)))
+        (w.tags && w.tags.some((t) => t.toLowerCase().includes(q)))
       );
     }
 
     if (activeTag !== 'All') {
-      results = results.filter(w => w.tags && w.tags.includes(activeTag));
+      results = results.filter((w) => w.tags && w.tags.includes(activeTag));
     }
 
     return results;
   }, [allWorks, activeTag, searchQuery]);
 
-  const allTags = ['All', ...new Set(allWorks.flatMap(w => w.tags || []))];
+  const allTags = ['All', ...new Set(allWorks.flatMap((w) => w.tags || []))];
 
   return (
     <div>
@@ -39,9 +45,8 @@ export default function Explore({ searchQuery }) {
       </div>
 
       <div className="container section" style={{ paddingTop: 'var(--space-xl)' }}>
-        {/* Filter tags */}
         <div className="explore-filters">
-          {allTags.map(tag => (
+          {allTags.map((tag) => (
             <button
               key={tag}
               className={`tag ${activeTag === tag ? 'active' : ''}`}
@@ -52,25 +57,30 @@ export default function Explore({ searchQuery }) {
           ))}
         </div>
 
-        {/* Results count */}
         <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 'var(--space-lg)' }}>
           {filteredWorks.length} {filteredWorks.length === 1 ? 'result' : 'results'}
           {activeTag !== 'All' ? ` in "${activeTag}"` : ''}
           {searchQuery ? ` for "${searchQuery}"` : ''}
         </p>
 
-        {/* Grid */}
         {filteredWorks.length > 0 ? (
           <div className="shayari-grid">
             {filteredWorks.map((work, i) => (
               <div key={work.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
-                <ShayariCard shayari={work} poetName={work.poetName} poetId={work.poetId} />
+                <ShayariCard
+                  shayari={work}
+                  poetName={work.poetName}
+                  poetId={work.poetId}
+                  onSaveToNotebook={onSaveToNotebook}
+                />
               </div>
             ))}
           </div>
         ) : (
           <div className="empty-state">
-            <div className="empty-state-icon">🔍</div>
+            <div className="empty-state-icon">
+              <Search size={48} />
+            </div>
             <h3 style={{ marginBottom: '0.5rem' }}>No poems found</h3>
             <p>Try a different search or filter</p>
           </div>

@@ -10,7 +10,7 @@ export default function Footer() {
             <h3>Solace</h3>
             <p>
               Where timeless poetry meets emerging voices. Discover the beauty of Urdu
-              literature — from the golden age to the words being written today.
+              literature - from the golden age to the words being written today.
             </p>
           </div>
 
@@ -39,7 +39,11 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 Solace. Made with <Heart size={14} style={{ display: 'inline', color: '#C47A7A', verticalAlign: 'middle' }} /> for poetry lovers.</span>
+          <span>
+            © 2026 Solace. Made with{' '}
+            <Heart size={14} style={{ display: 'inline', color: 'var(--rose)', verticalAlign: 'middle' }} />{' '}
+            for poetry lovers.
+          </span>
           <span>Inspired by the legacy of Rekhta</span>
         </div>
       </div>

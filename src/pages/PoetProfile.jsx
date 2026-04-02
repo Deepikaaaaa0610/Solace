@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, BookOpen, Quote, FileText } from 'lucide-react';
 import ShayariCard from '../components/ShayariCard';
-import { getPoetById, poets } from '../data/poets';
+import { getPoetById } from '../data/poets';
+import { getCleanText } from '../utils/text';
 
-export default function PoetProfile() {
+export default function PoetProfile({ onSaveToNotebook }) {
   const { id } = useParams();
   const poet = getPoetById(id);
   const [activeTab, setActiveTab] = useState('works');
@@ -13,7 +14,9 @@ export default function PoetProfile() {
     return (
       <div className="container" style={{ paddingTop: '120px', textAlign: 'center' }}>
         <div className="empty-state">
-          <div className="empty-state-icon">😕</div>
+          <div className="empty-state-icon">
+            <BookOpen size={48} />
+          </div>
           <h3>Poet not found</h3>
           <p style={{ marginBottom: '1.5rem' }}>The poet you're looking for doesn't exist in our collection.</p>
           <Link to="/poets" className="btn btn-primary">
@@ -24,9 +27,10 @@ export default function PoetProfile() {
     );
   }
 
-  const ghazals = poet.works.filter(w => w.type === 'Ghazal');
-  const nazms = poet.works.filter(w => w.type === 'Nazm');
-  const shers = poet.works.filter(w => w.type === 'Sher');
+  const ghazals = poet.works.filter((w) => w.type === 'Ghazal');
+  const nazms = poet.works.filter((w) => w.type === 'Nazm');
+  const shers = poet.works.filter((w) => w.type === 'Sher');
+  const displayNameUrdu = getCleanText(poet.nameUrdu);
 
   const tabs = [
     { id: 'works', label: 'All Works', icon: BookOpen, count: poet.works.length },
@@ -38,17 +42,20 @@ export default function PoetProfile() {
 
   const getActiveWorks = () => {
     switch (activeTab) {
-      case 'ghazals': return ghazals;
-      case 'nazms': return nazms;
-      case 'shers': return shers;
-      default: return poet.works;
+      case 'ghazals':
+        return ghazals;
+      case 'nazms':
+        return nazms;
+      case 'shers':
+        return shers;
+      default:
+        return poet.works;
     }
   };
 
   return (
     <div style={{ paddingTop: '70px' }}>
       <div className="container">
-        {/* Back link */}
         <Link
           to="/poets"
           className="btn btn-ghost"
@@ -57,7 +64,6 @@ export default function PoetProfile() {
           <ArrowLeft size={16} /> All Poets
         </Link>
 
-        {/* Hero */}
         <div className="poet-profile-hero animate-fade-in-up">
           <div className="poet-profile-avatar">
             {poet.image ? (
@@ -68,9 +74,11 @@ export default function PoetProfile() {
           </div>
           <div className="poet-profile-info">
             <h1>{poet.name}</h1>
-            <p style={{ fontFamily: 'var(--font-urdu)', fontSize: '1.4rem', color: 'var(--gold)', opacity: 0.6, marginBottom: '0.5rem' }}>
-              {poet.nameUrdu}
-            </p>
+            {displayNameUrdu && (
+              <p style={{ fontFamily: 'var(--font-urdu)', fontSize: '1.4rem', color: 'var(--gold)', opacity: 0.6, marginBottom: '0.5rem' }}>
+                {displayNameUrdu}
+              </p>
+            )}
             <div className="poet-profile-era">
               <Calendar size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
               {poet.era}
@@ -101,9 +109,8 @@ export default function PoetProfile() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="poet-profile-tabs">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               className={`poet-tab ${activeTab === tab.id ? 'active' : ''}`}
@@ -115,10 +122,11 @@ export default function PoetProfile() {
                   marginLeft: '6px',
                   fontSize: '0.75rem',
                   opacity: 0.6,
-                  background: 'rgba(255,255,255,0.05)',
+                  background: 'rgba(var(--olive-rgb), 0.14)',
                   padding: '2px 8px',
                   borderRadius: '12px',
-                }}>
+                }}
+                >
                   {tab.count}
                 </span>
               )}
@@ -126,7 +134,6 @@ export default function PoetProfile() {
           ))}
         </div>
 
-        {/* Tab Content */}
         <div className="section" style={{ paddingTop: 'var(--space-lg)' }}>
           {activeTab === 'bio' ? (
             <div className="animate-fade-in" style={{ maxWidth: '700px' }}>
@@ -153,12 +160,19 @@ export default function PoetProfile() {
             <div className="shayari-grid">
               {getActiveWorks().map((work, i) => (
                 <div key={work.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.08}s` }}>
-                  <ShayariCard shayari={work} poetName={poet.name} poetId={poet.id} />
+                  <ShayariCard
+                    shayari={work}
+                    poetName={poet.name}
+                    poetId={poet.id}
+                    onSaveToNotebook={onSaveToNotebook}
+                  />
                 </div>
               ))}
               {getActiveWorks().length === 0 && (
                 <div className="empty-state">
-                  <div className="empty-state-icon">📜</div>
+                  <div className="empty-state-icon">
+                    <Quote size={48} />
+                  </div>
                   <h3>No {activeTab} in our collection yet</h3>
                 </div>
               )}

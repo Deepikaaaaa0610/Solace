@@ -1,112 +1,100 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ArrowRight, Sparkles } from 'lucide-react';
-import { featuredShayaris } from '../data/shayaris';
+import { BookOpen, ArrowRight, Flame, TrendingUp } from 'lucide-react';
+import { getCleanText } from '../utils/text';
 
-export default function HeroSection() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [fade, setFade] = useState(true);
+function formatCompactLikes(value = 0) {
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}k`;
+  }
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % featuredShayaris.length);
-        setFade(true);
-      }, 500);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+  return `${value}`;
+}
 
-  const current = featuredShayaris[currentIndex];
+export default function HeroSection({ featuredWork, featuredPoet, poetryOfDayWorks = [] }) {
+  if (!featuredWork || !featuredPoet) {
+    return null;
+  }
+
+  const displayText = getCleanText(featuredWork.roman, featuredWork.text);
 
   return (
-    <section className="hero">
-      <div className="hero-bg" />
-      
-      {/* Floating particles */}
-      <div className="hero-particles">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="particle" style={{
-            left: `${15 + i * 15}%`,
-            animationDelay: `${i * 1.2}s`,
-            animationDuration: `${8 + i * 2}s`,
-          }} />
-        ))}
-      </div>
+    <section className="hero-poster-shell">
+      <div className="container">
+        <div className="hero-poster animate-fade-in-up">
+          <div className="hero-poster-panel">
+            <span className="hero-poster-meta">Featured Poet</span>
+            <strong>{featuredPoet.name}</strong>
+            <span className="hero-poster-date">{featuredPoet.era}</span>
+          </div>
 
-      <div className="hero-content">
-        <div className="hero-badge">
-          <Sparkles size={14} />
-          <span>Poetry Lives Here</span>
+          <div className="hero-poster-copy">
+            <div className="hero-poster-badge">
+              <Flame size={16} />
+              <span>Most Read On Solace</span>
+            </div>
+
+            <p className="hero-poster-kicker">Poetry of the Day</p>
+            <h1 className="hero-poster-title">{featuredWork.title}</h1>
+
+            <p className="hero-poster-text">{displayText}</p>
+
+            <div className="hero-poster-author">
+              <span>{featuredPoet.name}</span>
+              <span>{featuredWork.type}</span>
+              <span>{formatCompactLikes(featuredWork.likes)} likes</span>
+            </div>
+
+            <div className="hero-poster-actions">
+              <Link to={`/poets/${featuredPoet.id}`} className="btn btn-primary">
+                <BookOpen size={18} />
+                Read Poet
+              </Link>
+              <Link to="/explore" className="btn hero-poster-outline">
+                Explore Poetry
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="hero-poster-image-wrap">
+            <div className="hero-poster-brand">solace</div>
+            {featuredPoet.image ? (
+              <img
+                src={featuredPoet.image}
+                alt={featuredPoet.name}
+                className="hero-poster-image"
+              />
+            ) : (
+              <div className="hero-poster-fallback">{featuredPoet.name.charAt(0)}</div>
+            )}
+          </div>
         </div>
 
-        <h1 className="hero-title">
-          Find Your <span className="gold">Solace</span> in Words
-        </h1>
+        <div className="hero-day-strip animate-fade-in-up">
+          <div className="hero-day-heading">
+            <div>
+              <p className="hero-day-label">Today&apos;s Top 5</p>
+              <h2>Poetry of the Day</h2>
+            </div>
+            <TrendingUp size={22} />
+          </div>
 
-        <div className="hero-ornament" />
-
-        <p
-          className="hero-shayari"
-          style={{
-            opacity: fade ? 1 : 0,
-            transition: 'opacity 0.5s ease',
-            animation: 'none'
-          }}
-        >
-          {current.roman}
-        </p>
-
-        <p
-          className="hero-shayari-poet"
-          style={{
-            opacity: fade ? 1 : 0,
-            transition: 'opacity 0.5s ease',
-            animation: 'none'
-          }}
-        >
-          — {current.poet}
-        </p>
-
-        <div className="hero-actions" style={{ animation: 'none', opacity: 1 }}>
-          <Link to="/explore" className="btn btn-primary">
-            <BookOpen size={18} />
-            Explore Poetry
-          </Link>
-          <Link to="/community" className="btn btn-outline">
-            Share Your Words
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-
-        {/* Dots indicator */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '8px',
-          marginTop: '2rem'
-        }}>
-          {featuredShayaris.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                setFade(false);
-                setTimeout(() => { setCurrentIndex(i); setFade(true); }, 300);
-              }}
-              style={{
-                width: i === currentIndex ? '28px' : '8px',
-                height: '8px',
-                borderRadius: '4px',
-                background: i === currentIndex ? 'var(--gold)' : 'rgba(212,168,83,0.3)',
-                border: 'none',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                cursor: 'pointer',
-                padding: 0,
-              }}
-              aria-label={`Show shayari ${i + 1}`}
-            />
-          ))}
+          <div className="hero-day-grid">
+            {poetryOfDayWorks.map((work, index) => (
+              <Link
+                key={work.id}
+                to={`/poets/${work.poetId}`}
+                className="hero-day-card"
+              >
+                <span className="hero-day-rank">0{index + 1}</span>
+                <p className="hero-day-line">{getCleanText(work.roman, work.text)}</p>
+                <div className="hero-day-footer">
+                  <span>{work.poetName}</span>
+                  <span>{formatCompactLikes(work.likes)}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -5,14 +5,14 @@ export const initialCommunityPosts = [
     displayName: 'Ruhaani Qalam',
     avatar: 'R',
     title: 'Ek Shaam Mere Naam',
-    text: 'शाम ढली तो याद तुम्हारी आई है\nहर एक हवा में तुम्हारी ख़ुशबू समाई है\nमैं क्या करूँ कि ये दिल मानता नहीं\nतेरे बिना ये ज़िंदगी बस रुलाई है',
+    text: 'शाम ढली तो याद तुम्हारी आई है\nहर एक हवा में तुम्हारी खुशबू समाई है\nमैं क्या करूं कि ये दिल मानता नहीं\nतेरे बिना ये ज़िंदगी बस रुलाई है',
     roman: 'Shaam dhali to yaad tumhari aayi hai\nHar ek hawa mein tumhari khushbu samaai hai\nMain kya karun ki ye dil maanta nahi\nTere bina ye zindagi bas rulaai hai',
     tags: ['Love', 'Longing'],
     likes: 234,
     comments: 18,
     timestamp: Date.now() - (2 * 60 * 60 * 1000),
     liked: false,
-    bookmarked: false
+    bookmarked: false,
   },
   {
     id: 'cp-2',
@@ -20,14 +20,14 @@ export const initialCommunityPosts = [
     displayName: 'Shayara Dil Se',
     avatar: 'S',
     title: 'Tooti Ummeed',
-    text: 'टूटी उम्मीद को जोड़ रही हूँ\nबिखरे हुए ख़्वाबों को समेट रही हूँ\nदुनिया कहती है छोड़ दे\nपर मैं अपनी ज़िद से लड़ रही हूँ',
+    text: 'टूटी उम्मीद को जोड़ रही हूं\nबिखरे हुए ख़्वाबों को समेट रही हूं\nदुनिया कहती है छोड़ दे\nपर मैं अपनी ज़िद से लड़ रही हूं',
     roman: 'Tooti ummeed ko jod rahi hun\nBikhre hue khwabon ko samet rahi hun\nDuniya kehti hai chhod de\nPar main apni zid se lad rahi hun',
     tags: ['Resilience', 'Life'],
     likes: 187,
     comments: 24,
     timestamp: Date.now() - (5 * 60 * 60 * 1000),
     liked: false,
-    bookmarked: false
+    bookmarked: false,
   },
   {
     id: 'cp-3',
@@ -41,7 +41,7 @@ export const initialCommunityPosts = [
     comments: 41,
     timestamp: Date.now() - (8 * 60 * 60 * 1000),
     liked: false,
-    bookmarked: false
+    bookmarked: false,
   },
   {
     id: 'cp-4',
@@ -49,14 +49,14 @@ export const initialCommunityPosts = [
     displayName: 'Nayi Awaaz',
     avatar: 'N',
     title: 'Chai Aur Baarish',
-    text: 'बारिश की बूँदें खिड़की पे\nचाय का प्याला हाथों में\nतुम्हारी कमी इस मौसम में\nमहसूस होती है बातों में',
+    text: 'बारिश की बूंदें खिड़की पे\nचाय का प्याला हाथों में\nतुम्हारी कमी इस मौसम में\nमहसूस होती है बातों में',
     roman: 'Baarish ki boondein khidki pe\nChai ka pyala haathon mein\nTumhari kami is mausam mein\nMehsoos hoti hai baaton mein',
     tags: ['Love', 'Nature'],
     likes: 456,
     comments: 52,
     timestamp: Date.now() - (24 * 60 * 60 * 1000),
     liked: false,
-    bookmarked: false
+    bookmarked: false,
   },
   {
     id: 'cp-5',
@@ -64,14 +64,14 @@ export const initialCommunityPosts = [
     displayName: 'Sufi Soch',
     avatar: 'S',
     title: 'Darya Aur Main',
-    text: 'दरिया से पूछा मैंने\nतू इतना बहता क्यों है\nबोला — रुक जाऊँ तो\nसमंदर मुझसे रूठ जाएगा\n\nमैंने कहा — मेरा भी\nकुछ ऐसा ही हाल है\nरुक जाऊँ तो ज़िंदगी\nमुझसे आगे निकल जाएगी',
-    roman: 'Darya se poocha maine\nTu itna behta kyon hai\nBola — ruk jaun to\nSamandar mujhse rooth jayega',
+    text: 'दरिया से पूछा मैंने\nतू इतना बहता क्यों है\nबोला - रुक जाऊं तो\nसमंदर मुझसे रूठ जाएगा\n\nमैंने कहा - मेरा भी\nकुछ ऐसा ही हाल है\nरुक जाऊं तो ज़िंदगी\nमुझसे आगे निकल जाएगी',
+    roman: 'Darya se poocha maine\nTu itna behta kyon hai\nBola - ruk jaun to\nSamandar mujhse rooth jayega\n\nMaine kaha - mera bhi\nKuch aisa hi haal hai\nRuk jaun to zindagi\nMujhse aage nikal jayegi',
     tags: ['Philosophy', 'Life'],
     likes: 289,
     comments: 33,
     timestamp: Date.now() - (2 * 24 * 60 * 60 * 1000),
     liked: false,
-    bookmarked: false
+    bookmarked: false,
   },
   {
     id: 'cp-6',
@@ -85,6 +85,6 @@ export const initialCommunityPosts = [
     comments: 67,
     timestamp: Date.now() - (3 * 24 * 60 * 60 * 1000),
     liked: false,
-    bookmarked: false
-  }
+    bookmarked: false,
+  },
 ];

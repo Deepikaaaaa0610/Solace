@@ -1,21 +1,74 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import HeroSection from '../components/HeroSection';
 import PoetCard from '../components/PoetCard';
 import ShayariCard from '../components/ShayariCard';
 import CommunityPost from '../components/CommunityPost';
+import LatestNewsSection from '../components/LatestNewsSection';
 import { poets, getAllWorks } from '../data/poets';
 import { categories } from '../data/shayaris';
 
-export default function Home({ communityPosts, onLikePost, onBookmarkPost }) {
+export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSaveToNotebook }) {
+  const [newsArticles, setNewsArticles] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(true);
+  const [newsError, setNewsError] = useState('');
   const allWorks = getAllWorks();
+  const featuredWork = allWorks[0];
+  const featuredPoet = poets.find((poet) => poet.id === featuredWork?.poetId);
+  const poetryOfDayWorks = allWorks.slice(0, 5);
   const trendingShayaris = allWorks.slice(0, 6);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadNews() {
+      try {
+        setNewsLoading(true);
+        setNewsError('');
+
+        const response = await fetch('/api/news');
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Unable to fetch poetry news.');
+        }
+
+        if (active) {
+          setNewsArticles(data.articles || []);
+        }
+      } catch (error) {
+        if (active) {
+          setNewsError(error instanceof Error ? error.message : 'Unable to fetch poetry news.');
+        }
+      } finally {
+        if (active) {
+          setNewsLoading(false);
+        }
+      }
+    }
+
+    loadNews();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div>
-      <HeroSection />
+      <HeroSection
+        featuredWork={featuredWork}
+        featuredPoet={featuredPoet}
+        poetryOfDayWorks={poetryOfDayWorks}
+      />
 
-      {/* Legendary Poets Section */}
+      <LatestNewsSection
+        articles={newsArticles}
+        loading={newsLoading}
+        error={newsError}
+      />
+
       <section className="section">
         <div className="container">
           <div className="section-header">
@@ -34,7 +87,6 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost }) {
         </div>
       </section>
 
-      {/* Trending Shayaris */}
       <section className="section" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="section-header">
@@ -49,14 +101,18 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost }) {
           <div className="shayari-grid">
             {trendingShayaris.map((work, i) => (
               <div key={work.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.08}s` }}>
-                <ShayariCard shayari={work} poetName={work.poetName} poetId={work.poetId} />
+                <ShayariCard
+                  shayari={work}
+                  poetName={work.poetName}
+                  poetId={work.poetId}
+                  onSaveToNotebook={onSaveToNotebook}
+                />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Categories */}
       <section className="section">
         <div className="container">
           <div className="section-header">
@@ -64,7 +120,7 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost }) {
           </div>
           <div className="categories-grid">
             {categories.map((cat, i) => (
-              <Link to="/explore" key={cat.id}>
+              <Link to={`/explore?tag=${cat.name}`} key={cat.id}>
                 <div
                   className="card category-card animate-fade-in-up"
                   style={{ animationDelay: `${i * 0.05}s` }}
@@ -82,7 +138,6 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost }) {
         </div>
       </section>
 
-      {/* From the Community */}
       <section className="section" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container">
           <div className="section-header">

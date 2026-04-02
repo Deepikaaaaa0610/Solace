@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { Heart, Bookmark, MessageCircle, Share2 } from 'lucide-react';
+import { getCleanText } from '../utils/text';
 
 function timeAgo(ts) {
   if (typeof ts === 'string') return ts;
@@ -16,6 +16,8 @@ function timeAgo(ts) {
 }
 
 export default function CommunityPost({ post, onLike, onBookmark }) {
+  const romanText = getCleanText(post.roman);
+
   const handleLike = () => {
     if (onLike) onLike(post.id);
   };
@@ -24,13 +26,34 @@ export default function CommunityPost({ post, onLike, onBookmark }) {
     if (onBookmark) onBookmark(post.id);
   };
 
+  const handleShare = async () => {
+    const shareTitle = post.title && post.title !== 'Untitled' ? post.title : post.displayName;
+    const shareText = getCleanText(post.roman, post.text);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+        });
+        return;
+      } catch {
+        // Ignore cancelled shares and fall back to the clipboard path below.
+      }
+    }
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(`${shareTitle}\n\n${shareText}`);
+    }
+  };
+
   return (
     <div className="card community-post">
       <div className="community-post-header">
         <div className="community-post-avatar">{post.avatar}</div>
         <div className="community-post-user">
           <div className="community-post-username">{post.displayName}</div>
-          <div className="community-post-time">@{post.username} · {timeAgo(post.timestamp)}</div>
+          <div className="community-post-time">@{post.username} - {timeAgo(post.timestamp)}</div>
         </div>
       </div>
 
@@ -39,7 +62,7 @@ export default function CommunityPost({ post, onLike, onBookmark }) {
           <div className="community-post-title">{post.title}</div>
         )}
         <p className="community-post-text">{post.text}</p>
-        {post.roman && (
+        {romanText && (
           <p style={{
             fontFamily: 'var(--font-body)',
             fontSize: '0.8rem',
@@ -48,13 +71,14 @@ export default function CommunityPost({ post, onLike, onBookmark }) {
             lineHeight: 1.7,
             fontStyle: 'normal',
             whiteSpace: 'pre-line',
-          }}>
-            {post.roman}
+          }}
+          >
+            {romanText}
           </p>
         )}
         {post.tags && (
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-            {post.tags.map(tag => (
+            {post.tags.map((tag) => (
               <span key={tag} className="tag" style={{ cursor: 'default' }}>{tag}</span>
             ))}
           </div>
@@ -79,7 +103,7 @@ export default function CommunityPost({ post, onLike, onBookmark }) {
         >
           <Bookmark size={16} fill={post.bookmarked ? 'currentColor' : 'none'} />
         </button>
-        <button className="shayari-action-btn">
+        <button className="shayari-action-btn" onClick={handleShare}>
           <Share2 size={16} />
         </button>
       </div>

@@ -10,18 +10,17 @@ export default function Community({ posts, onAddPost, onLikePost, onBookmarkPost
   const sortedPosts = [...posts].sort((a, b) => {
     if (sortBy === 'trending') return b.likes - a.likes;
     if (sortBy === 'most-liked') return b.likes - a.likes;
-    return 0; // 'latest' keeps original order (newest first since we prepend)
+    return 0;
   });
 
   return (
     <div>
       <div className="page-header">
         <h1>Community</h1>
-        <p>Where new voices rise — share your poetry with the world</p>
+        <p>Where new voices rise - share your poetry with the world</p>
       </div>
 
       <div className="container section" style={{ paddingTop: 'var(--space-lg)' }}>
-        {/* Sort & New Post button */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -30,7 +29,8 @@ export default function Community({ posts, onAddPost, onLikePost, onBookmarkPost
           margin: '0 auto var(--space-xl)',
           flexWrap: 'wrap',
           gap: '1rem',
-        }}>
+        }}
+        >
           <div className="community-sort">
             <button
               className={`tag ${sortBy === 'latest' ? 'active' : ''}`}
@@ -57,7 +57,6 @@ export default function Community({ posts, onAddPost, onLikePost, onBookmarkPost
           </button>
         </div>
 
-        {/* Feed */}
         <div className="community-feed">
           {sortedPosts.map((post, i) => (
             <div key={post.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
@@ -71,7 +70,9 @@ export default function Community({ posts, onAddPost, onLikePost, onBookmarkPost
 
           {sortedPosts.length === 0 && (
             <div className="empty-state">
-              <div className="empty-state-icon">✍️</div>
+              <div className="empty-state-icon">
+                <Plus size={48} />
+              </div>
               <h3>No poems yet</h3>
               <p style={{ marginBottom: '1rem' }}>Be the first to share your poetry!</p>
               <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
@@ -82,7 +83,6 @@ export default function Community({ posts, onAddPost, onLikePost, onBookmarkPost
         </div>
       </div>
 
-      {/* FAB */}
       <button
         className="fab"
         onClick={() => setShowCreate(true)}
@@ -92,7 +92,6 @@ export default function Community({ posts, onAddPost, onLikePost, onBookmarkPost
         <Plus size={28} />
       </button>
 
-      {/* Create Post Modal */}
       <CreatePost
         isOpen={showCreate}
         onClose={() => setShowCreate(false)}

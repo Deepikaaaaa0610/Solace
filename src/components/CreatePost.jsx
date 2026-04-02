@@ -63,7 +63,7 @@ export default function CreatePost({ isOpen, onClose, onSubmit }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>
-            <Feather size={20} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', color: '#D4A853' }} />
+            <Feather size={20} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', color: 'var(--gold)' }} />
             Share Your Poetry
           </h2>
           <button className="btn-icon" onClick={onClose}>

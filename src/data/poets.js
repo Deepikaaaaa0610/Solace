@@ -111,6 +111,37 @@ Shamma har rang mein jalti hai sehar hone tak`,
          likes: 3850,
          tags: ['Love']
       }
+      ,
+      {
+         id: 'sh-22',
+         title: 'Na Tha Kuchh To Khuda Tha',
+         type: 'Sher',
+         author: 'Mirza Ghalib',
+         text: `Na tha kuchh to Khuda tha, kuchh na hota to Khuda hota\nDuboya mujh ko hone ne, na hota main to kya hota`,
+         roman: '',
+         likes: 4480,
+         tags: ['Philosophy', 'Existence']
+      },
+      {
+         id: 'sh-23',
+         title: 'Dil Hi To Hai',
+         type: 'Sher',
+         author: 'Mirza Ghalib',
+         text: `Dil hi to hai na sang-o-khisht, dard se bhar na aaye kyun\nRoenge hum hazar baar, koi hamein satae kyun`,
+         roman: '',
+         likes: 4725,
+         tags: ['Pain', 'Heart']
+      },
+      {
+         id: 'sh-24',
+         title: 'Ragon Mein Daudte Phirne',
+         type: 'Sher',
+         author: 'Mirza Ghalib',
+         text: `Ragon mein daudte phirne ke hum nahin qail\nJab aankh hi se na tapka to phir lahu kya hai`,
+         roman: '',
+         likes: 4310,
+         tags: ['Pain', 'Intensity']
+      }
     ]
   },
   {
@@ -121,7 +152,7 @@ Shamma har rang mein jalti hai sehar hone tak`,
     birthPlace: 'Agra, Mughal Empire',
     shortBio: 'Often hailed as "Khuda-e-Sukhan" (The God of Poetry), he is one of the principal architects of the Urdu language.',
     fullBio: 'Mir Taqi Mir, often hailed as "Khuda-e-Sukhan" (The God of Poetry), was the leading Urdu poet of the 18th century, and one of the pioneers who gave shape to the Urdu language itself. He was one of the principal poets of the Delhi School of the Urdu ghazal and remains arguably the foremost name in Urdu poetry.\n\nOperating primarily in 18th-century Delhi, his poetry captures the tragic decline of the Mughal Empire intertwined with profound personal sorrow, melancholia, and romantic yearning. His works laid the aesthetic foundations that Ghalib and others would build upon.',
-    image: 'https://rekhta.pc.cdn.bitgravity.com/Images/Shayar/mir-taqi-mir.jpg',
+    image: 'https://commons.wikimedia.org/wiki/Special:FilePath/Mir%20Taqi%20Mir,%20Lucknow,%201800-10.jpg',
     works: [
       {
         id: 'mr-1',
@@ -196,6 +227,27 @@ Yaar ke aa jaane ko yak-a-yak umar dobara jaane hai`,
          roman: `सुब्ह होती है शाम होती है \nउम्र यूँही तमाम होती है`,
          likes: 3105,
          tags: ['Time']
+      }
+      ,
+      {
+         id: 'sh-25',
+         title: 'Dekh To Dil Ki Jaan Se',
+         type: 'Sher',
+         author: 'Mir Taqi Mir',
+         text: `Dekh to dil ki jaan se uthta hai\nYe dhuan sa kahan se uthta hai`,
+         roman: '',
+         likes: 3640,
+         tags: ['Melancholy', 'Heart']
+      },
+      {
+         id: 'sh-26',
+         title: 'Rah-e-Dur-e-Ishq',
+         type: 'Sher',
+         author: 'Mir Taqi Mir',
+         text: `Rah-e-dur-e-ishq mein rota hai kya\nAage aage dekhiye hota hai kya`,
+         roman: '',
+         likes: 3890,
+         tags: ['Love', 'Journey']
       }
     ]
   },
@@ -693,11 +745,17 @@ Qafila saath aur safar tanha`,
     ]
   }
 ];
-
 export const getAllWorks = () => {
   let allWorks = [];
   poets.forEach(poet => {
-    allWorks = [...allWorks, ...poet.works];
+    allWorks = [
+      ...allWorks,
+      ...poet.works.map(work => ({
+        ...work,
+        poetId: poet.id,
+        poetName: poet.name,
+      })),
+    ];
   });
   return allWorks.sort((a, b) => b.likes - a.likes);
 };
