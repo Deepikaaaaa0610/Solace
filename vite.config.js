@@ -1,6 +1,36 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const localFallbackArticles = [
+  {
+    id: 'fallback-mushaira-archives',
+    title: 'How Digital Archives Are Bringing Classical Urdu Poetry to New Readers',
+    description: 'A look at how online collections, annotated texts, and searchable poetry libraries are helping readers rediscover classical poets and difficult vocabulary.',
+    image: '',
+    url: 'https://rekhta.org',
+    publishedAt: '2026-04-02T08:00:00.000Z',
+    source: 'Solace Library Notes',
+  },
+  {
+    id: 'fallback-poetry-readings',
+    title: 'Why Live Poetry Readings Still Matter in the Age of Short-Form Content',
+    description: 'From mushairas to campus readings, spoken poetry continues to create a stronger emotional connection than passive scrolling.',
+    image: '',
+    url: 'https://rekhta.org',
+    publishedAt: '2026-04-01T14:30:00.000Z',
+    source: 'Solace Editorial',
+  },
+  {
+    id: 'fallback-ghazal-guide',
+    title: 'A Beginner’s Guide to Reading Ghazals Without Feeling Lost',
+    description: 'Key ideas like matla, maqta, radeef, qafiya, ishq, hijr, and wafa explained in a reader-friendly way for new poetry lovers.',
+    image: '',
+    url: 'https://rekhta.org',
+    publishedAt: '2026-03-31T10:15:00.000Z',
+    source: 'Solace Reader Guide',
+  },
+];
+
 function decodeXml(value = '') {
   return value
     .replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1')
@@ -152,10 +182,57 @@ async function fetchFallbackArticles() {
   return enrichArticles(parsed);
 }
 
+function createLocalFallbackPayload(message = '') {
+  return {
+    articles: localFallbackArticles,
+    provider: 'local-fallback',
+    message,
+  };
+}
+
+function registerNewsMiddleware(server, apiKey, cache, setCache) {
+  server.middlewares.use('/api/news', async (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+
+    if (cache.payload && Date.now() < cache.expiresAt) {
+      res.end(JSON.stringify(cache.payload));
+      return;
+    }
+
+    try {
+      const articles = apiKey
+        ? await fetchGNewsArticles(apiKey)
+        : await fetchFallbackArticles();
+
+      const payload = {
+        articles: articles.length > 0 ? articles : localFallbackArticles,
+        provider: apiKey ? 'gnews' : 'google-news-rss',
+      };
+
+      setCache({
+        payload,
+        expiresAt: Date.now() + (15 * 60 * 1000),
+      });
+
+      res.end(JSON.stringify(payload));
+    } catch (error) {
+      const payload = createLocalFallbackPayload(
+        error instanceof Error ? error.message : 'Unable to fetch poetry news.'
+      );
+
+      setCache({
+        payload,
+        expiresAt: Date.now() + (15 * 60 * 1000),
+      });
+
+      res.end(JSON.stringify(payload));
+    }
+  });
+}
+
 function poetryNewsApi(mode) {
   const env = loadEnv(mode, process.cwd(), '');
   const apiKey = env.GNEWS_API_KEY;
-  const cacheTtlMs = 15 * 60 * 1000;
   let cache = {
     expiresAt: 0,
     payload: null,
@@ -164,37 +241,13 @@ function poetryNewsApi(mode) {
   return {
     name: 'poetry-news-api',
     configureServer(server) {
-      server.middlewares.use('/api/news', async (_req, res) => {
-        res.setHeader('Content-Type', 'application/json');
-
-        if (cache.payload && Date.now() < cache.expiresAt) {
-          res.end(JSON.stringify(cache.payload));
-          return;
-        }
-
-        try {
-          const articles = apiKey
-            ? await fetchGNewsArticles(apiKey)
-            : await fetchFallbackArticles();
-
-          const payload = {
-            articles,
-            provider: apiKey ? 'gnews' : 'google-news-rss',
-          };
-
-          cache = {
-            payload,
-            expiresAt: Date.now() + cacheTtlMs,
-          };
-
-          res.end(JSON.stringify(payload));
-        } catch (error) {
-          res.statusCode = 502;
-          res.end(JSON.stringify({
-            articles: [],
-            message: error instanceof Error ? error.message : 'Unable to fetch poetry news.',
-          }));
-        }
+      registerNewsMiddleware(server, apiKey, cache, (nextCache) => {
+        cache = nextCache;
+      });
+    },
+    configurePreviewServer(server) {
+      registerNewsMiddleware(server, apiKey, cache, (nextCache) => {
+        cache = nextCache;
       });
     },
   };

@@ -9,7 +9,7 @@ import LatestNewsSection from '../components/LatestNewsSection';
 import { poets, getAllWorks } from '../data/poets';
 import { categories } from '../data/shayaris';
 
-export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSaveToNotebook }) {
+export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSaveWork }) {
   const [newsArticles, setNewsArticles] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
   const [newsError, setNewsError] = useState('');
@@ -105,7 +105,7 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSav
                   shayari={work}
                   poetName={work.poetName}
                   poetId={work.poetId}
-                  onSaveToNotebook={onSaveToNotebook}
+                  onSaveWork={onSaveWork}
                 />
               </div>
             ))}

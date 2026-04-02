@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { BookOpen, FileText, Plus, Trash2 } from 'lucide-react';
 
 function formatUpdatedAt(timestamp) {
@@ -14,6 +13,10 @@ function formatUpdatedAt(timestamp) {
   }
 }
 
+function getFileLabel(name) {
+  return name?.trim() ? name : 'Untitled Notebook';
+}
+
 export default function Notebook({
   notebookData,
   onCreateFile,
@@ -21,7 +24,6 @@ export default function Notebook({
   onRenameFile,
   onSelectFile,
   onUpdateContent,
-  onRemoveWork,
 }) {
   const files = notebookData?.files || [];
   const activeFile = files.find((file) => file.id === notebookData?.activeFileId) || files[0];
@@ -30,7 +32,7 @@ export default function Notebook({
     <div>
       <div className="page-header">
         <h1>Personal Notebook</h1>
-        <p>Write your own poetry, keep drafts, and collect favorite works in separate files</p>
+        <p>Write your own poetry, keep drafts, and organize your thoughts in separate files</p>
       </div>
 
       <div className="container section" style={{ paddingTop: 'var(--space-lg)' }}>
@@ -62,8 +64,8 @@ export default function Notebook({
                         <FileText size={16} />
                       </span>
                       <div>
-                        <strong>{file.name}</strong>
-                        <p>{file.savedWorks.length} saved works</p>
+                        <strong>{getFileLabel(file.name)}</strong>
+                        <p>{file.content.trim() ? `Updated ${formatUpdatedAt(file.updatedAt)}` : 'Empty file'}</p>
                       </div>
                     </div>
                   </button>
@@ -73,7 +75,7 @@ export default function Notebook({
                       event.stopPropagation();
                       onDeleteFile(file.id);
                     }}
-                    aria-label={`Delete ${file.name}`}
+                    aria-label={`Delete ${getFileLabel(file.name)}`}
                   >
                     <Trash2 size={16} />
                   </button>
@@ -84,82 +86,31 @@ export default function Notebook({
 
           <section className="notebook-editor">
             {activeFile ? (
-              <>
-                <div className="card notebook-writing-panel">
-                  <div className="notebook-panel-header">
-                    <div>
-                      <p className="notebook-label">Active File</p>
-                      <h2>Your Writing Space</h2>
-                    </div>
-                    <span className="notebook-updated">
-                      Updated {formatUpdatedAt(activeFile.updatedAt)}
-                    </span>
+              <div className="card notebook-writing-panel">
+                <div className="notebook-panel-header">
+                  <div>
+                    <p className="notebook-label">Active File</p>
+                    <h2>Your Writing Space</h2>
                   </div>
-
-                  <input
-                    className="notebook-title-input"
-                    value={activeFile.name}
-                    onChange={(event) => onRenameFile(activeFile.id, event.target.value)}
-                    placeholder="Notebook title"
-                  />
-
-                  <textarea
-                    className="notebook-textarea"
-                    value={activeFile.content}
-                    onChange={(event) => onUpdateContent(activeFile.id, event.target.value)}
-                    placeholder="Write your own poetry, notes, ideas, or drafts here..."
-                  />
+                  <span className="notebook-updated">
+                    Updated {formatUpdatedAt(activeFile.updatedAt)}
+                  </span>
                 </div>
 
-                <div className="card notebook-saved-panel">
-                  <div className="notebook-panel-header">
-                    <div>
-                      <p className="notebook-label">Favorites</p>
-                      <h2>Saved Works</h2>
-                    </div>
-                    <span className="notebook-updated">
-                      {activeFile.savedWorks.length} items
-                    </span>
-                  </div>
+                <input
+                  className="notebook-title-input"
+                  value={activeFile.name}
+                  onChange={(event) => onRenameFile(activeFile.id, event.target.value)}
+                  placeholder="Notebook title"
+                />
 
-                  {activeFile.savedWorks.length === 0 ? (
-                    <div className="empty-state notebook-empty-state">
-                      <div className="empty-state-icon">
-                        <BookOpen size={48} />
-                      </div>
-                      <h3>No saved works yet</h3>
-                      <p>Use the bookmark button on any poem card to save it into this notebook file.</p>
-                    </div>
-                  ) : (
-                    <div className="notebook-saved-list">
-                      {activeFile.savedWorks.map((work) => (
-                        <article key={work.id} className="notebook-work-card">
-                          <div className="notebook-work-top">
-                            <div>
-                              <p className="notebook-work-type">{work.type}</p>
-                              <h3>{work.title}</h3>
-                            </div>
-                            <button
-                              className="btn-icon notebook-remove-work"
-                              onClick={() => onRemoveWork(activeFile.id, work.id)}
-                              aria-label={`Remove ${work.title}`}
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                          <p className="notebook-work-text">{work.text}</p>
-                          <div className="notebook-work-footer">
-                            <Link to={`/poets/${work.poetId}`} className="notebook-work-link">
-                              {work.poetName}
-                            </Link>
-                            <span>{work.likes} likes</span>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
+                <textarea
+                  className="notebook-textarea"
+                  value={activeFile.content}
+                  onChange={(event) => onUpdateContent(activeFile.id, event.target.value)}
+                  placeholder="Write your own poetry, notes, ideas, or drafts here..."
+                />
+              </div>
             ) : (
               <div className="empty-state">
                 <div className="empty-state-icon">

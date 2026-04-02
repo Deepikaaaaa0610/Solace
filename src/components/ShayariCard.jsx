@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Heart, Bookmark, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getCleanText } from '../utils/text';
+import InteractivePoetryText from './InteractivePoetryText';
 
-export default function ShayariCard({ shayari, poetName, poetId, showRoman = true, onSaveToNotebook }) {
+export default function ShayariCard({ shayari, poetName, poetId, showRoman = true, onSaveWork }) {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [likeCount, setLikeCount] = useState(shayari.likes ?? 0);
@@ -20,8 +21,8 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
 
   const handleBookmark = (e) => {
     e.stopPropagation();
-    if (onSaveToNotebook) {
-      const result = onSaveToNotebook({
+    if (onSaveWork) {
+      const result = onSaveWork({
         ...shayari,
         poetId,
         poetName,
@@ -29,8 +30,8 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
       setBookmarked(true);
       setSaveMessage(
         result?.added
-          ? `Saved to ${result.fileName}`
-          : `Already saved in ${result.fileName}`
+          ? `Saved to ${result.collectionName}`
+          : `Already in ${result.collectionName}`
       );
       window.setTimeout(() => setSaveMessage(''), 2200);
       return;
@@ -61,7 +62,7 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
 
   return (
     <div className="card shayari-card">
-      <p className="shayari-text">{shayari.text}</p>
+      <InteractivePoetryText text={shayari.text} className="shayari-text" />
 
       {secondaryText && (
         <p className="shayari-roman">{secondaryText}</p>
@@ -94,8 +95,8 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
         <button
           className={`shayari-action-btn ${bookmarked ? 'bookmarked' : ''}`}
           onClick={handleBookmark}
-          aria-label="Save to notebook"
-          title="Save to notebook"
+          aria-label="Save to saved works"
+          title="Save to saved works"
         >
           <Bookmark size={16} fill={bookmarked ? 'currentColor' : 'none'} />
         </button>

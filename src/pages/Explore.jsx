@@ -4,7 +4,7 @@ import { Search } from 'lucide-react';
 import ShayariCard from '../components/ShayariCard';
 import { getAllWorks } from '../data/poets';
 
-export default function Explore({ searchQuery, onSaveToNotebook }) {
+export default function Explore({ searchQuery, onSaveWork }) {
   const [searchParams] = useSearchParams();
   const tagFromUrl = searchParams.get('tag');
   const [activeTag, setActiveTag] = useState(tagFromUrl || 'All');
@@ -71,7 +71,7 @@ export default function Explore({ searchQuery, onSaveToNotebook }) {
                   shayari={work}
                   poetName={work.poetName}
                   poetId={work.poetId}
-                  onSaveToNotebook={onSaveToNotebook}
+                  onSaveWork={onSaveWork}
                 />
               </div>
             ))}

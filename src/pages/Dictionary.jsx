@@ -1,15 +1,17 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Languages } from 'lucide-react';
-import { dictionaryEntries } from '../data/dictionary';
+import { preparedDictionaryEntries } from '../utils/dictionary';
 
 export default function Dictionary() {
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get('query') || '');
 
   const filteredEntries = useMemo(() => {
     const value = query.trim().toLowerCase();
-    if (!value) return dictionaryEntries;
+    if (!value) return preparedDictionaryEntries;
 
-    return dictionaryEntries.filter((entry) =>
+    return preparedDictionaryEntries.filter((entry) =>
       entry.word.toLowerCase().includes(value) ||
       entry.transliteration.toLowerCase().includes(value) ||
       entry.englishMeaning.toLowerCase().includes(value) ||

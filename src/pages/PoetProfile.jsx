@@ -5,7 +5,7 @@ import ShayariCard from '../components/ShayariCard';
 import { getPoetById } from '../data/poets';
 import { getCleanText } from '../utils/text';
 
-export default function PoetProfile({ onSaveToNotebook }) {
+export default function PoetProfile({ onSaveWork }) {
   const { id } = useParams();
   const poet = getPoetById(id);
   const [activeTab, setActiveTab] = useState('works');
@@ -164,7 +164,7 @@ export default function PoetProfile({ onSaveToNotebook }) {
                     shayari={work}
                     poetName={poet.name}
                     poetId={poet.id}
-                    onSaveToNotebook={onSaveToNotebook}
+                    onSaveWork={onSaveWork}
                   />
                 </div>
               ))}

@@ -25,6 +25,7 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
     { path: '/dictionary', label: 'Dictionary' },
     { path: '/poets', label: 'Poets' },
     { path: '/community', label: 'Community' },
+    { path: '/saved', label: 'Saved' },
     { path: '/notebook', label: 'Notebook' },
   ];
 

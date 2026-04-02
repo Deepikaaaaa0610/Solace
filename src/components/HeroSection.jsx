@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, ArrowRight, Flame, TrendingUp } from 'lucide-react';
 import { getCleanText } from '../utils/text';
+import InteractivePoetryText from './InteractivePoetryText';
 
 function formatCompactLikes(value = 0) {
   if (value >= 1000) {
@@ -36,7 +37,7 @@ export default function HeroSection({ featuredWork, featuredPoet, poetryOfDayWor
             <p className="hero-poster-kicker">Poetry of the Day</p>
             <h1 className="hero-poster-title">{featuredWork.title}</h1>
 
-            <p className="hero-poster-text">{displayText}</p>
+            <InteractivePoetryText text={displayText} className="hero-poster-text" />
 
             <div className="hero-poster-author">
               <span>{featuredPoet.name}</span>

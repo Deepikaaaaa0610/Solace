@@ -8,6 +8,7 @@ import PoetsList from './pages/PoetsList';
 import PoetProfile from './pages/PoetProfile';
 import Community from './pages/Community';
 import Notebook from './pages/Notebook';
+import SavedWorks from './pages/SavedWorks';
 import Dictionary from './pages/Dictionary';
 import { initialCommunityPosts } from './data/communityPosts';
 
@@ -17,18 +18,63 @@ function createNotebookFile(name = 'My Notebook') {
     id: `nb-${timestamp}`,
     name,
     content: '',
-    savedWorks: [],
     createdAt: timestamp,
     updatedAt: timestamp,
   };
 }
 
-function createDefaultNotebookState() {
-  const initialFile = createNotebookFile();
+function sanitizeNotebookFile(file, index = 0) {
+  const createdAt = Number(file?.createdAt) || Date.now();
+  const updatedAt = Number(file?.updatedAt) || createdAt;
+
   return {
-    files: [initialFile],
-    activeFileId: initialFile.id,
+    id: file?.id || `nb-${createdAt}-${index}`,
+    name: typeof file?.name === 'string' ? file.name : `Notebook ${index + 1}`,
+    content: typeof file?.content === 'string' ? file.content : '',
+    createdAt,
+    updatedAt,
   };
+}
+
+function createDefaultNotebookState() {
+  return {
+    files: [],
+    activeFileId: null,
+  };
+}
+
+function isLegacyAutoNotebook(files = []) {
+  if (files.length !== 1) {
+    return false;
+  }
+
+  const [file] = files;
+  return (
+    file?.name === 'My Notebook' &&
+    !file?.content?.trim()
+  );
+}
+
+function extractLegacySavedWorks(files = []) {
+  const seen = new Set();
+  const extracted = [];
+
+  files.forEach((file) => {
+    if (!Array.isArray(file?.savedWorks)) {
+      return;
+    }
+
+    file.savedWorks.forEach((work) => {
+      if (!work?.id || seen.has(work.id)) {
+        return;
+      }
+
+      seen.add(work.id);
+      extracted.push(work);
+    });
+  });
+
+  return extracted;
 }
 
 function ScrollToTop() {
@@ -67,10 +113,18 @@ export default function App() {
       const saved = localStorage.getItem('solace-notebook-data');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed?.files) && parsed.files.length > 0) {
+        if (Array.isArray(parsed?.files)) {
+          const files = parsed.files.map((file, index) => sanitizeNotebookFile(file, index));
+
+          if (isLegacyAutoNotebook(files)) {
+            return createDefaultNotebookState();
+          }
+
+          const hasActiveFile = files.some((file) => file.id === parsed.activeFileId);
+
           return {
-            files: parsed.files,
-            activeFileId: parsed.activeFileId || parsed.files[0].id,
+            files,
+            activeFileId: hasActiveFile ? parsed.activeFileId : files[0]?.id || null,
           };
         }
       }
@@ -81,6 +135,28 @@ export default function App() {
     return createDefaultNotebookState();
   });
 
+  const [savedWorks, setSavedWorks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('solace-saved-works');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      }
+
+      const legacyNotebook = localStorage.getItem('solace-notebook-data');
+      if (legacyNotebook) {
+        const parsedNotebook = JSON.parse(legacyNotebook);
+        return extractLegacySavedWorks(parsedNotebook?.files);
+      }
+    } catch (e) {
+      console.error('Error loading saved works:', e);
+    }
+
+    return [];
+  });
+
   useEffect(() => {
     try {
       localStorage.setItem('solace-notebook-data', JSON.stringify(notebookData));
@@ -88,6 +164,14 @@ export default function App() {
       console.error('Error saving notebook data:', e);
     }
   }, [notebookData]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('solace-saved-works', JSON.stringify(savedWorks));
+    } catch (e) {
+      console.error('Error saving works:', e);
+    }
+  }, [savedWorks]);
 
   const handleAddPost = (newPost) => {
     setCommunityPosts(prev => [newPost, ...prev]);
@@ -133,7 +217,7 @@ export default function App() {
       ...prev,
       files: prev.files.map((file) =>
         file.id === fileId
-          ? { ...file, name: name || 'Untitled Notebook', updatedAt: Date.now() }
+          ? { ...file, name, updatedAt: Date.now() }
           : file
       ),
     }));
@@ -161,76 +245,44 @@ export default function App() {
         files: remainingFiles,
         activeFileId:
           prev.activeFileId === fileId
-            ? remainingFiles[0].id
+            ? remainingFiles[0]?.id || null
             : prev.activeFileId,
       };
     });
   };
 
-  const handleSaveWorkToNotebook = (work) => {
-    let result = { added: false, fileName: 'My Notebook' };
+  const handleSaveWork = (work) => {
+    let added = false;
 
-    setNotebookData((prev) => {
-      const files = prev.files.length > 0 ? prev.files : createDefaultNotebookState().files;
-      const activeFileId = prev.activeFileId || files[0].id;
-      const targetFile = files.find((file) => file.id === activeFileId) || files[0];
-      const alreadyExists = targetFile.savedWorks.some((savedWork) => savedWork.id === work.id);
-
-      result = {
-        added: !alreadyExists,
-        fileName: targetFile.name,
-      };
+    setSavedWorks((prev) => {
+      const alreadyExists = prev.some((savedWork) => savedWork.id === work.id);
+      added = !alreadyExists;
 
       if (alreadyExists) {
-        return {
-          files,
-          activeFileId: targetFile.id,
-        };
+        return prev;
       }
 
-      return {
-        files: files.map((file) =>
-          file.id === targetFile.id
-            ? {
-                ...file,
-                savedWorks: [
-                  {
-                    id: work.id,
-                    title: work.title,
-                    text: work.text,
-                    roman: work.roman || '',
-                    poetId: work.poetId,
-                    poetName: work.poetName,
-                    type: work.type,
-                    likes: work.likes ?? 0,
-                    tags: work.tags || [],
-                  },
-                  ...file.savedWorks,
-                ],
-                updatedAt: Date.now(),
-              }
-            : file
-        ),
-        activeFileId: targetFile.id,
-      };
+      return [
+        {
+          id: work.id,
+          title: work.title,
+          text: work.text,
+          roman: work.roman || '',
+          poetId: work.poetId,
+          poetName: work.poetName,
+          type: work.type,
+          likes: work.likes ?? 0,
+          tags: work.tags || [],
+        },
+        ...prev,
+      ];
     });
 
-    return result;
+    return { added, collectionName: 'Saved Works' };
   };
 
-  const handleRemoveWorkFromNotebook = (fileId, workId) => {
-    setNotebookData((prev) => ({
-      ...prev,
-      files: prev.files.map((file) =>
-        file.id === fileId
-          ? {
-              ...file,
-              savedWorks: file.savedWorks.filter((work) => work.id !== workId),
-              updatedAt: Date.now(),
-            }
-          : file
-      ),
-    }));
+  const handleRemoveSavedWork = (workId) => {
+    setSavedWorks((prev) => prev.filter((work) => work.id !== workId));
   };
 
   return (
@@ -247,7 +299,7 @@ export default function App() {
                 communityPosts={communityPosts}
                 onLikePost={handleLikePost}
                 onBookmarkPost={handleBookmarkPost}
-                onSaveToNotebook={handleSaveWorkToNotebook}
+                onSaveWork={handleSaveWork}
               />
             }
           />
@@ -256,14 +308,14 @@ export default function App() {
             element={
               <Explore
                 searchQuery={searchQuery}
-                onSaveToNotebook={handleSaveWorkToNotebook}
+                onSaveWork={handleSaveWork}
               />
             }
           />
           <Route path="/poets" element={<PoetsList />} />
           <Route
             path="/poets/:id"
-            element={<PoetProfile onSaveToNotebook={handleSaveWorkToNotebook} />}
+            element={<PoetProfile onSaveWork={handleSaveWork} />}
           />
           <Route
             path="/community"
@@ -286,7 +338,15 @@ export default function App() {
                 onRenameFile={handleRenameNotebookFile}
                 onSelectFile={handleSetActiveNotebookFile}
                 onUpdateContent={handleUpdateNotebookContent}
-                onRemoveWork={handleRemoveWorkFromNotebook}
+              />
+            }
+          />
+          <Route
+            path="/saved"
+            element={
+              <SavedWorks
+                savedWorks={savedWorks}
+                onRemoveWork={handleRemoveSavedWork}
               />
             }
           />
