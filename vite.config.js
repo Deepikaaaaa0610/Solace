@@ -254,6 +254,7 @@ function poetryNewsApi(mode) {
 }
 
 export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? '/Solace/' : '/',
   plugins: [react(), poetryNewsApi(mode)],
   server: {
     port: 5173,

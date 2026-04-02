@@ -802,6 +802,55 @@ h1, h2, h3, h4 {
   line-height: 1.8;
 }
 
+.shayari-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.shayari-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.shayari-toolbar-btn {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: var(--transition-base);
+}
+
+.shayari-toolbar-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: rgba(var(--olive-rgb), 0.12);
+  border-color: rgba(var(--olive-rgb), 0.18);
+}
+
+.shayari-toolbar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.shayari-toolbar-btn.active {
+  color: var(--rose);
+  background: rgba(var(--rose-rgb), 0.12);
+  border-color: rgba(var(--rose-rgb), 0.2);
+}
+
+.shayari-toolbar-btn.saved {
+  color: var(--gold);
+}
+
 .shayari-card .shayari-meta {
   display: flex;
   align-items: center;
@@ -828,6 +877,11 @@ h1, h2, h3, h4 {
   align-items: center;
   gap: var(--space-sm);
   margin-top: var(--space-md);
+}
+
+.shayari-action-stat {
+  font-size: 0.82rem;
+  color: var(--text-muted);
 }
 
 .shayari-action-btn {
@@ -862,30 +916,74 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
 }
 
+.shayari-glossary {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  border-radius: 16px;
+  background: rgba(var(--cream-rgb), 0.66);
+  border: 1px solid var(--border-subtle);
+}
+
+.shayari-glossary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+}
+
+.shayari-glossary-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.shayari-glossary-item {
+  padding: 0.8rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(var(--cream-rgb), 0.9);
+  border: 1px solid rgba(var(--olive-rgb), 0.14);
+}
+
+.shayari-glossary-item strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.92rem;
+}
+
+.shayari-glossary-item p,
+.shayari-glossary-empty {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
 .interactive-poetry {
   white-space: pre-wrap;
 }
 
 .interactive-word {
   display: inline;
-  padding: 0 0.18rem;
-  margin: 0 0.02rem;
-  border-radius: 0.45rem;
+  padding: 0;
+  margin: 0;
   color: inherit;
   line-height: inherit;
-  background: rgba(var(--rose-rgb), 0.08);
-  border-bottom: 1px dashed rgba(var(--rose-rgb), 0.46);
+  background: transparent;
+  border-bottom: 1px dashed rgba(var(--rose-rgb), 0.38);
   transition: var(--transition-base);
 }
 
 .interactive-word:hover {
-  background: rgba(var(--rose-rgb), 0.16);
+  color: var(--rose);
   border-bottom-color: rgba(var(--rose-rgb), 0.72);
 }
 
 .interactive-word.active {
-  background: var(--rose);
-  color: #fff8f4;
+  color: var(--rose);
   border-bottom-color: transparent;
 }
 
@@ -984,6 +1082,44 @@ h1, h2, h3, h4 {
   gap: 0.45rem;
   color: var(--gold);
   font-weight: 600;
+}
+
+.poem-info-modal {
+  max-width: 640px;
+}
+
+.poem-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.poem-info-item,
+.poem-info-preview {
+  padding: var(--space-md);
+  border-radius: 14px;
+  background: rgba(var(--cream-rgb), 0.82);
+  border: 1px solid var(--border-subtle);
+}
+
+.poem-info-item span,
+.poem-info-preview span {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+}
+
+.poem-info-item p,
+.poem-info-preview p {
+  color: var(--text-primary);
+  line-height: 1.75;
+}
+
+.poem-info-preview {
+  margin-top: var(--space-lg);
 }
 
 /* ── Community Post ───────────────────────────────────────── */
@@ -2194,6 +2330,11 @@ h1, h2, h3, h4 {
     justify-content: center;
   }
 
+  .shayari-glossary-list,
+  .poem-info-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hero-poster {
     grid-template-columns: 180px minmax(0, 1fr);
   }
@@ -2236,6 +2377,10 @@ h1, h2, h3, h4 {
   
   .section-title {
     font-size: 1.5rem;
+  }
+
+  .shayari-toolbar {
+    flex-wrap: wrap;
   }
   
   .shayari-grid {

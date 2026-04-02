@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Solace</title>
+    <script>
+      var pathSegmentsToKeep = 1;
+      var l = window.location;
+      var basePath = l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/');
+      var routePath = l.pathname.slice(basePath.length);
+      var normalizedRoute = routePath.startsWith('/') ? routePath.slice(1) : routePath;
+      var redirectUrl =
+        basePath +
+        '/?p=/' +
+        normalizedRoute +
+        (l.search ? '&q=' + encodeURIComponent(l.search.slice(1)) : '') +
+        l.hash;
+      l.replace(redirectUrl);
+    </script>
+  </head>
+  <body></body>
+</html>
