@@ -14,10 +14,17 @@ function formatDate(value) {
 
 export default function LatestNewsSection({ articles, loading, error }) {
   return (
-    <section className="section" style={{ paddingTop: 'var(--space-xl)' }}>
+    <section className="section news-section">
       <div className="container">
-        <div className="section-header">
-          <h2 className="section-title">Latest Poetry News</h2>
+        <div className="split-section-heading">
+          <div>
+            <p className="home-section-kicker">Outside the archive</p>
+            <h2 className="home-section-title">Recent poetry and culture signals.</h2>
+          </div>
+          <p className="home-section-copy news-section-copy">
+            Strong editorial homepages mix timeless content with fresh context. This stream keeps the site
+            from feeling static.
+          </p>
         </div>
 
         {loading && (
@@ -40,7 +47,7 @@ export default function LatestNewsSection({ articles, loading, error }) {
 
         {!loading && !error && (
           <div className="news-grid">
-            {articles.map((article) => (
+            {articles.slice(0, 3).map((article) => (
               <a
                 key={article.id}
                 href={article.url}

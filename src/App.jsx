@@ -286,11 +286,11 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div className="app-shell">
       <ScrollToTop />
       <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      
-      <main style={{ minHeight: '100vh' }}>
+
+      <main className="app-main">
         <Routes>
           <Route
             path="/"

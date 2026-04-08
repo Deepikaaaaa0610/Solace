@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X } from 'lucide-react';
+import { ArrowRight, Menu, Search, X } from 'lucide-react';
 
 export default function Navbar({ searchQuery, setSearchQuery }) {
   const [scrolled, setScrolled] = useState(false);
@@ -31,78 +31,97 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-        <div className="navbar-inner">
-          <Link to="/" className="navbar-logo">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="url(#solace-grad)"/>
-              <path d="M12 6c-1.1 0-2 .9-2 2v4l3.5 3.5 1.06-1.06L12 11.88V8c0-.55-.45-1-1-1h-1z" fill="url(#solace-grad)" opacity="0.6"/>
-              <path d="M7 12.5c.83 1.72 2.63 3 4.75 3 1.07 0 2.06-.33 2.88-.88" stroke="url(#solace-grad)" strokeWidth="1.2" strokeLinecap="round" fill="none"/>
-              <defs>
-                <linearGradient id="solace-grad" x1="2" y1="2" x2="22" y2="22">
-                  <stop stopColor="#d8a48f"/>
-                  <stop offset="1" stopColor="#bb8588"/>
-                </linearGradient>
-              </defs>
-            </svg>
-            <span className="navbar-logo-text">Solace</span>
+      <nav className={`site-nav ${scrolled ? 'is-scrolled' : ''}`}>
+        <div className="site-nav-inner">
+          <Link to="/" className="site-brand">
+            <span className="site-brand-mark">S</span>
+            <span className="site-brand-copy">
+              <span className="site-brand-name">Solace</span>
+              <span className="site-brand-tag">Urdu poetry, curated well</span>
+            </span>
           </Link>
 
-          <div className="navbar-links">
-            {links.map(link => (
+          <div className="site-nav-links">
+            {links.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`navbar-link ${isActive(link.path) ? 'active' : ''}`}
+                className={`site-nav-link ${isActive(link.path) ? 'active' : ''}`}
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          <div className="navbar-actions">
-            <div className="navbar-search">
-              <Search size={16} color="var(--text-muted)" />
+          <div className="site-nav-actions">
+            <label className="site-search">
+              <Search size={16} color="currentColor" />
               <input
                 type="text"
-                placeholder="Search poets, shayaris..."
+                placeholder="Search poets, ghazals, moods"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(event) => setSearchQuery(event.target.value)}
               />
-            </div>
+            </label>
+
+            <Link to="/community" className="site-nav-cta">
+              Share a verse
+              <ArrowRight size={14} />
+            </Link>
+
             <button
-              className="mobile-menu-btn"
-              onClick={() => setMobileOpen(!mobileOpen)}
+              className="site-menu-btn"
+              onClick={() => setMobileOpen((prev) => !prev)}
               aria-label="Toggle menu"
+              type="button"
             >
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile nav overlay */}
       <div
-        className={`mobile-nav-overlay ${mobileOpen ? 'open' : ''}`}
+        className={`site-drawer-backdrop ${mobileOpen ? 'open' : ''}`}
         onClick={() => setMobileOpen(false)}
       />
-      <div className={`mobile-nav ${mobileOpen ? 'open' : ''}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <span className="navbar-logo-text" style={{ fontSize: '1.3rem' }}>Solace</span>
-          <button onClick={() => setMobileOpen(false)} className="btn-icon">
+
+      <aside className={`site-drawer ${mobileOpen ? 'open' : ''}`}>
+        <div className="site-drawer-header">
+          <div>
+            <div className="site-drawer-title">Solace</div>
+            <p className="site-drawer-copy">A calmer way to browse poets, poems, and shared writing.</p>
+          </div>
+          <button className="site-menu-btn" onClick={() => setMobileOpen(false)} type="button">
             <X size={20} />
           </button>
         </div>
-        {links.map(link => (
+
+        <label className="site-search site-search-drawer">
+          <Search size={16} color="currentColor" />
+          <input
+            type="text"
+            placeholder="Search the archive"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </label>
+
+        {links.map((link) => (
           <Link
             key={link.path}
             to={link.path}
-            className={`mobile-nav-link ${isActive(link.path) ? 'active' : ''}`}
+            className={`site-drawer-link ${isActive(link.path) ? 'active' : ''}`}
           >
             {link.label}
           </Link>
         ))}
-      </div>
+
+        <Link to="/community" className="site-nav-cta site-drawer-cta">
+          Start writing
+          <ArrowRight size={14} />
+        </Link>
+      </aside>
     </>
   );
 }

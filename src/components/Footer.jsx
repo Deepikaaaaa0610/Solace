@@ -1,50 +1,51 @@
 import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { ArrowRight, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="footer">
+    <footer className="site-footer">
       <div className="container">
-        <div className="footer-grid">
-          <div className="footer-brand">
-            <h3>Solace</h3>
+        <div className="site-footer-grid">
+          <div className="site-footer-brand">
+            <p className="site-footer-kicker">Solace</p>
+            <h3>Poetry, arranged like a product people want to return to.</h3>
             <p>
-              Where timeless poetry meets emerging voices. Discover the beauty of Urdu
-              literature - from the golden age to the words being written today.
+              Discover timeless Urdu writing, keep your own notes, and move between the canon and the
+              community without friction.
             </p>
+            <Link to="/explore" className="site-footer-link">
+              Explore the archive
+              <ArrowRight size={15} />
+            </Link>
           </div>
 
-          <div className="footer-col">
-            <h4>Explore</h4>
-            <Link to="/explore">All Shayaris</Link>
-            <Link to="/poets">Legendary Poets</Link>
+          <div className="site-footer-column">
+            <h4>Browse</h4>
+            <Link to="/explore">All works</Link>
+            <Link to="/poets">Poet profiles</Link>
+            <Link to="/dictionary">Dictionary</Link>
+          </div>
+
+          <div className="site-footer-column">
+            <h4>Participate</h4>
             <Link to="/community">Community</Link>
+            <Link to="/saved">Saved works</Link>
+            <Link to="/notebook">Notebook</Link>
           </div>
 
-          <div className="footer-col">
-            <h4>Categories</h4>
-            <Link to="/explore">Love & Romance</Link>
-            <Link to="/explore">Pain & Sorrow</Link>
-            <Link to="/explore">Philosophy</Link>
-            <Link to="/explore">Revolution</Link>
-          </div>
-
-          <div className="footer-col">
-            <h4>About</h4>
-            <a href="#">About Solace</a>
-            <a href="#">Contact Us</a>
-            <a href="#">Contribute</a>
-            <a href="#">Privacy Policy</a>
+          <div className="site-footer-column">
+            <h4>Atmosphere</h4>
+            <span>Daily featured work</span>
+            <span>Editorial discovery</span>
+            <span>Archive-first reading</span>
           </div>
         </div>
 
-        <div className="footer-bottom">
+        <div className="site-footer-bottom">
           <span>
-            © 2026 Solace. Made with{' '}
-            <Heart size={14} style={{ display: 'inline', color: 'var(--rose)', verticalAlign: 'middle' }} />{' '}
-            for poetry lovers.
+            Copyright 2026 Solace. Made with <Heart size={14} /> for poetry lovers.
           </span>
-          <span>Inspired by the legacy of Rekhta</span>
+          <span>Inspired by the archive tradition Rekhta made beloved.</span>
         </div>
       </div>
     </footer>
