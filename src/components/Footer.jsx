@@ -1,52 +1,42 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="site-footer">
-      <div className="container">
-        <div className="site-footer-grid">
-          <div className="site-footer-brand">
-            <p className="site-footer-kicker">Solace</p>
-            <h3>Poetry, arranged like a product people want to return to.</h3>
-            <p>
-              Discover timeless Urdu writing, keep your own notes, and move between the canon and the
-              community without friction.
-            </p>
-            <Link to="/explore" className="site-footer-link">
-              Explore the archive
-              <ArrowRight size={15} />
-            </Link>
-          </div>
-
-          <div className="site-footer-column">
-            <h4>Browse</h4>
-            <Link to="/explore">All works</Link>
-            <Link to="/poets">Poet profiles</Link>
-            <Link to="/dictionary">Dictionary</Link>
-          </div>
-
-          <div className="site-footer-column">
-            <h4>Participate</h4>
-            <Link to="/community">Community</Link>
-            <Link to="/saved">Saved works</Link>
-            <Link to="/notebook">Notebook</Link>
-          </div>
-
-          <div className="site-footer-column">
-            <h4>Atmosphere</h4>
-            <span>Daily featured work</span>
-            <span>Editorial discovery</span>
-            <span>Archive-first reading</span>
-          </div>
+    <footer className="rekhta-footer">
+      <div className="rekhta-footer-top">
+        <div className="rekhta-footer-brand">
+          <span className="rekhta-footer-logo">solace</span>
+          <p>Discover timeless Urdu writing, keep your own notes, and explore the archive with ease.</p>
         </div>
 
-        <div className="site-footer-bottom">
-          <span>
-            Copyright 2026 Solace. Made with <Heart size={14} /> for poetry lovers.
-          </span>
-          <span>Inspired by the archive tradition Rekhta made beloved.</span>
+        <div className="rekhta-footer-col">
+          <h4>Browse</h4>
+          <Link to="/explore">All Works</Link>
+          <Link to="/poets">Poet Profiles</Link>
+          <Link to="/dictionary">Dictionary</Link>
         </div>
+
+        <div className="rekhta-footer-col">
+          <h4>Participate</h4>
+          <Link to="/community">Community</Link>
+          <Link to="/saved">Saved Works</Link>
+          <Link to="/notebook">Notebook</Link>
+        </div>
+
+        <div className="rekhta-footer-col">
+          <h4>About</h4>
+          <span>Inspired by Rekhta</span>
+          <span>Built for poetry lovers</span>
+          <span>Archive-first reading</span>
+        </div>
+      </div>
+
+      <div className="rekhta-footer-bottom">
+        <span>
+          © 2026 Solace. Made with <Heart size={14} fill="currentColor" /> for poetry lovers.
+        </span>
+        <span>Open-source licenses</span>
       </div>
     </footer>
   );
