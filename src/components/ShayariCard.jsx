@@ -3,6 +3,7 @@ import {
   Bookmark,
   CircleHelp,
   Languages,
+  Mic,
   PlaySquare,
   Share2,
   Volume2,
@@ -13,6 +14,7 @@ import { Link } from 'react-router-dom';
 import { findDictionaryEntry, normalizeDictionaryKey } from '../utils/dictionary';
 import { getCleanText, repairMojibake } from '../utils/text';
 import InteractivePoetryText from './InteractivePoetryText';
+import AudioPlayer from './AudioPlayer';
 
 export default function ShayariCard({ shayari, poetName, poetId, showRoman = true, onSaveWork }) {
   const [bookmarked, setBookmarked] = useState(false);
@@ -20,6 +22,7 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
   const [showAlternateScript, setShowAlternateScript] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
 
   const repairedRoman = showRoman ? repairMojibake(shayari.roman || '') : '';
   const alternateScript =
@@ -69,16 +72,9 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
     setBookmarked(!bookmarked);
   };
 
-  const handleListen = (event) => {
+  const handleToggleAudioPlayer = (event) => {
     event.stopPropagation();
-    if (!('speechSynthesis' in window)) {
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(displayedPoem);
-    utterance.lang = showAlternateScript ? 'hi-IN' : 'en-US';
-    window.speechSynthesis.speak(utterance);
+    setShowAudioPlayer((prev) => !prev);
   };
 
   const handleWatch = (event) => {
@@ -112,12 +108,12 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
       <div className="shayari-toolbar">
         <div className="shayari-toolbar-group">
           <button
-            className="shayari-toolbar-btn"
-            onClick={handleListen}
-            aria-label="Listen to poem"
-            title="Listen"
+            className={`shayari-toolbar-btn ${showAudioPlayer ? 'active' : ''}`}
+            onClick={handleToggleAudioPlayer}
+            aria-label="AI Recitation"
+            title="AI Recitation"
           >
-            <Volume2 size={16} />
+            <Mic size={16} />
           </button>
           <button
             className="shayari-toolbar-btn"
@@ -173,6 +169,16 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
           </button>
         </div>
       </div>
+
+      {showAudioPlayer && (
+        <div className="shayari-audio-wrapper animate-fade-in">
+          <AudioPlayer
+            text={displayedPoem}
+            isHindi={showAlternateScript}
+            poetName={poetName}
+          />
+        </div>
+      )}
 
       <InteractivePoetryText text={displayedPoem} className="shayari-text" />
 
