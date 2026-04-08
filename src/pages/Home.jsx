@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpen,
+  Compass,
+  Notebook,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
 import HeroSection from '../components/HeroSection';
 import PoetCard from '../components/PoetCard';
 import ShayariCard from '../components/ShayariCard';
@@ -17,7 +25,40 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSav
   const featuredWork = allWorks[0];
   const featuredPoet = poets.find((poet) => poet.id === featuredWork?.poetId);
   const poetryOfDayWorks = allWorks.slice(0, 5);
-  const trendingShayaris = allWorks.slice(0, 6);
+  const trendingShayaris = allWorks.slice(0, 4);
+  const featuredPoets = poets.slice(0, 4);
+  const featuredMoods = categories.slice(0, 5);
+  const communityLead = communityPosts[0];
+  const communityPreview = communityPosts.slice(1, 3);
+  const totalLikes = allWorks.reduce((sum, work) => sum + (work.likes ?? 0), 0);
+
+  const archiveStats = [
+    { value: `${poets.length}+`, label: 'featured poets' },
+    { value: `${allWorks.length}+`, label: 'readable works' },
+    { value: `${Math.round(totalLikes / 1000)}k`, label: 'reader appreciations' },
+    { value: `${communityPosts.length}`, label: 'community voices' },
+  ];
+
+  const browseDestinations = [
+    {
+      title: 'Explore the archive',
+      description: 'Jump straight into ghazals, nazms, sher, and topic-led discovery.',
+      icon: Compass,
+      to: '/explore',
+    },
+    {
+      title: 'Study the masters',
+      description: 'Move through poet profiles with context, biography, and their most-read work.',
+      icon: BookOpen,
+      to: '/poets',
+    },
+    {
+      title: 'Keep your own notebook',
+      description: 'Save pieces, draft notes, and build a personal reading practice.',
+      icon: Notebook,
+      to: '/notebook',
+    },
+  ];
 
   useEffect(() => {
     let active = true;
@@ -56,11 +97,13 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSav
   }, []);
 
   return (
-    <div>
+    <div className="home-shell">
       <HeroSection
         featuredWork={featuredWork}
         featuredPoet={featuredPoet}
         poetryOfDayWorks={poetryOfDayWorks}
+        archiveStats={archiveStats}
+        featuredMoods={featuredMoods}
       />
 
       <LatestNewsSection
@@ -69,38 +112,91 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSav
         error={newsError}
       />
 
-      <section className="section">
+      <section className="section home-discovery-section">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Legendary Poets</h2>
-            <Link to="/poets" className="section-link">
-              View All <ArrowRight size={16} />
-            </Link>
+          <div className="home-section-intro">
+            <div>
+              <p className="home-section-kicker">Browse with intent</p>
+              <h2 className="home-section-title">A cleaner entry point into a large archive.</h2>
+            </div>
+            <p className="home-section-copy">
+              The strongest literary products feel less like a feed and more like a guided reading room.
+              These routes give the site that structure.
+            </p>
           </div>
-          <div className="poets-scroll">
-            {poets.map((poet, i) => (
-              <div key={poet.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                <PoetCard poet={poet} />
-              </div>
+
+          <div className="discover-grid">
+            {browseDestinations.map(({ title, description, icon: Icon, to }) => (
+              <Link key={title} to={to} className="discover-card">
+                <span className="discover-icon">
+                  <Icon size={20} />
+                </span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+                <span className="discover-link">
+                  Open
+                  <ArrowRight size={15} />
+                </span>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="section home-poets-section">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">
-              <Sparkles size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle', color: 'var(--gold)' }} />
-              Trending Shayaris
-            </h2>
-            <Link to="/explore" className="section-link">
-              Explore All <ArrowRight size={16} />
+          <div className="split-section-heading">
+            <div>
+              <p className="home-section-kicker">Editorial pick</p>
+              <h2 className="home-section-title">Start with poets who define the canon.</h2>
+            </div>
+            <Link to="/poets" className="section-link">
+              View All <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="shayari-grid">
-            {trendingShayaris.map((work, i) => (
-              <div key={work.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.08}s` }}>
+
+          <div className="poet-spotlight-grid">
+            <div className="poet-spotlight-card">
+              <p className="poet-spotlight-label">Why this works</p>
+              <h3>{featuredPoet?.name}</h3>
+              <p>
+                Lead with one authoritative voice, then let the user fan outward. That mirrors the better
+                product-led archive sites: one strong entry point, then a clear grid of adjacent paths.
+              </p>
+              <div className="poet-spotlight-metrics">
+                <span>{featuredPoet?.era}</span>
+                <span>{featuredPoet?.birthPlace}</span>
+              </div>
+            </div>
+
+            <div className="poet-showcase-grid">
+              {featuredPoets.map((poet) => (
+                <PoetCard key={poet.id} poet={poet} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section home-trending-section">
+        <div className="container">
+          <div className="split-section-heading">
+            <div>
+              <p className="home-section-kicker">High-signal reading</p>
+              <h2 className="home-section-title">Trending works, but presented with more restraint.</h2>
+            </div>
+            <div className="home-heading-chip">
+              <TrendingUp size={16} />
+              Reader momentum
+            </div>
+          </div>
+
+          <div className="curated-work-grid">
+            {trendingShayaris.map((work, index) => (
+              <div
+                key={work.id}
+                className={`curated-work-card ${index === 0 ? 'is-featured' : ''}`}
+              >
                 <ShayariCard
                   shayari={work}
                   poetName={work.poetName}
@@ -113,54 +209,74 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSav
         </div>
       </section>
 
-      <section className="section">
+      <section className="section home-community-section">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Explore by Mood</h2>
-          </div>
-          <div className="categories-grid">
-            {categories.map((cat, i) => (
-              <Link to={`/explore?tag=${cat.name}`} key={cat.id}>
-                <div
-                  className="card category-card animate-fade-in-up"
-                  style={{ animationDelay: `${i * 0.05}s` }}
-                >
-                  <div className="category-icon">{cat.icon}</div>
-                  <div className="category-name">{cat.name}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>
-                    {cat.nameHi}
-                  </div>
-                  <div className="category-count">{cat.count} shayaris</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">From the Community</h2>
+          <div className="split-section-heading">
+            <div>
+              <p className="home-section-kicker">Live voices</p>
+              <h2 className="home-section-title">Community writing deserves a stronger stage.</h2>
+            </div>
             <Link to="/community" className="section-link">
-              View All <ArrowRight size={16} />
+              Visit Community <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="community-feed">
-            {communityPosts.slice(0, 3).map((post, i) => (
-              <div key={post.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
+
+          <div className="community-showcase">
+            <div className="community-lead-panel">
+              <div className="community-lead-header">
+                <span className="home-heading-chip">
+                  <Users size={16} />
+                  New writing
+                </span>
+                <span className="community-lead-count">{communityPosts.length} active posts</span>
+              </div>
+              <h3>{communityLead?.title || 'Community spotlight'}</h3>
+              <p>
+                The homepage now treats user submissions like a cultural signal, not an afterthought.
+                That is closer to the stronger creator and editorial platforms on the web right now.
+              </p>
+              <Link to="/community" className="btn btn-primary">
+                Join the conversation
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+
+            <div className="community-preview-grid">
+              {communityPreview.map((post) => (
                 <CommunityPost
+                  key={post.id}
                   post={post}
                   onLike={onLikePost}
                   onBookmark={onBookmarkPost}
                 />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-          <div style={{ textAlign: 'center', marginTop: 'var(--space-2xl)' }}>
-            <Link to="/community" className="btn btn-outline">
-              See More from Community <ArrowRight size={16} />
-            </Link>
+        </div>
+      </section>
+
+      <section className="section home-moods-section">
+        <div className="container">
+          <div className="split-section-heading">
+            <div>
+              <p className="home-section-kicker">Fast discovery</p>
+              <h2 className="home-section-title">Browse by mood without dropping into a generic card wall.</h2>
+            </div>
+            <span className="home-heading-chip">
+              <Sparkles size={16} />
+              Curated moods
+            </span>
+          </div>
+
+          <div className="mood-grid">
+            {categories.map((category) => (
+              <Link to={`/explore?tag=${category.name}`} key={category.id} className="mood-card">
+                <span className="mood-icon">{category.icon}</span>
+                <strong>{category.name}</strong>
+                <span>{category.nameHi}</span>
+                <em>{category.count} works</em>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
