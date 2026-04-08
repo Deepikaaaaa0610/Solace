@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, Search, X } from 'lucide-react';
+import { Menu, Search, X, LogOut, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ searchQuery, setSearchQuery }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
+  const { user, isAuthenticated, openAuthModal, logout } = useAuth();
+  const profileRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -15,7 +19,19 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
 
   useEffect(() => {
     setMobileOpen(false);
+    setProfileOpen(false);
   }, [location]);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const isActive = (path) => location.pathname === path;
 
@@ -60,7 +76,48 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
             </div>
 
             <Link to="/community" className="rekhta-nav-btn rekhta-nav-btn-lang">ENG</Link>
-            <Link to="/notebook" className="rekhta-nav-btn">LOG IN</Link>
+
+            {isAuthenticated ? (
+              <div className="nav-profile-wrapper" ref={profileRef}>
+                <button
+                  className="nav-profile-btn"
+                  onClick={() => setProfileOpen((prev) => !prev)}
+                  aria-label="User profile"
+                >
+                  <span className="nav-avatar">{user.initials}</span>
+                </button>
+
+                {profileOpen && (
+                  <div className="nav-profile-dropdown animate-fade-in">
+                    <div className="nav-profile-header">
+                      <span className="nav-avatar nav-avatar-lg">{user.initials}</span>
+                      <div>
+                        <strong>{user.name}</strong>
+                        <p>{user.contact}</p>
+                      </div>
+                    </div>
+                    <div className="nav-profile-divider" />
+                    <Link to="/notebook" className="nav-profile-item" onClick={() => setProfileOpen(false)}>
+                      <User size={16} />
+                      My Notebook
+                    </Link>
+                    <Link to="/saved" className="nav-profile-item" onClick={() => setProfileOpen(false)}>
+                      <User size={16} />
+                      Saved Works
+                    </Link>
+                    <div className="nav-profile-divider" />
+                    <button className="nav-profile-item nav-profile-logout" onClick={logout}>
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button className="rekhta-nav-btn" onClick={() => openAuthModal()}>
+                LOG IN
+              </button>
+            )}
 
             <button
               className="rekhta-mobile-btn"
@@ -87,6 +144,16 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
           </button>
         </div>
 
+        {isAuthenticated && (
+          <div className="rekhta-drawer-user">
+            <span className="nav-avatar">{user.initials}</span>
+            <div>
+              <strong>{user.name}</strong>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user.contact}</p>
+            </div>
+          </div>
+        )}
+
         <div className="rekhta-search" style={{ width: '100%' }}>
           <Search size={16} />
           <input
@@ -106,6 +173,20 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
             {link.label}
           </Link>
         ))}
+
+        {isAuthenticated ? (
+          <button className="rekhta-drawer-link" onClick={logout} style={{ marginTop: 'auto' }}>
+            Sign Out
+          </button>
+        ) : (
+          <button
+            className="btn btn-primary"
+            style={{ margin: 'var(--space-md) 0', width: '100%' }}
+            onClick={() => { setMobileOpen(false); openAuthModal(); }}
+          >
+            LOG IN
+          </button>
+        )}
       </aside>
     </>
   );
