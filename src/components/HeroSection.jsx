@@ -1,22 +1,8 @@
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ArrowRight,
-  BookOpen,
-  Flame,
-  Library,
-  Sparkles,
-  TrendingUp,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getCleanText } from '../utils/text';
 import InteractivePoetryText from './InteractivePoetryText';
-
-function formatCompactLikes(value = 0) {
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}k`;
-  }
-
-  return `${value}`;
-}
 
 export default function HeroSection({
   featuredWork,
@@ -25,108 +11,102 @@ export default function HeroSection({
   archiveStats = [],
   featuredMoods = [],
 }) {
-  if (!featuredWork || !featuredPoet) {
-    return null;
-  }
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const displayText = getCleanText(featuredWork.roman, featuredWork.text);
+  // Build slides from poets and featured work
+  const slides = poetryOfDayWorks.slice(0, 5).map((work) => ({
+    id: work.id,
+    title: work.title,
+    text: getCleanText(work.roman, work.text),
+    poetName: work.poetName,
+    poetId: work.poetId,
+    type: work.type,
+    likes: work.likes,
+  }));
+
+  const totalSlides = slides.length;
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  }, [totalSlides]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  }, [totalSlides]);
+
+  // Auto-advance every 6 seconds
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 6000);
+    return () => clearInterval(timer);
+  }, [nextSlide]);
+
+  if (!slides.length) return null;
+
+  const active = slides[currentSlide];
 
   return (
-    <section className="hero-shell">
-      <div className="container">
-        <div className="hero-grid">
-          <div className="hero-copy-panel animate-fade-in-up">
-            <div className="hero-copy-topline">
-              <span className="hero-eyebrow">A more modern literary homepage</span>
-              <span className="hero-status">
-                <Sparkles size={14} />
-                Curated daily
-              </span>
-            </div>
-
-            <h1 className="hero-headline">Find the line that matches the hour you are in.</h1>
-            <p className="hero-description">
-              Solace is structured like a polished reading product now: a featured editorial pick, quick
-              signals from the archive, and clear paths into poets, moods, and community writing.
+    <section className="rekhta-hero">
+      {/* Full-width banner carousel */}
+      <div className="rekhta-banner">
+        <div className="rekhta-banner-content">
+          <div className="rekhta-banner-left">
+            <h1 className="rekhta-banner-title">
+              TODAY'S<br />
+              FEATURED<br />
+              POETRY
+            </h1>
+            <p className="rekhta-banner-sub">
+              Curated daily from the archive of {archiveStats[0]?.value || '8+'} legendary poets
             </p>
+          </div>
+          <div className="rekhta-banner-right">
+            <div className="rekhta-banner-badge">solace <span>PLUS</span></div>
+            <p className="rekhta-banner-date">
+              {new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit' }).toUpperCase()}
+            </p>
+            <p className="rekhta-banner-time">CURATED DAILY</p>
+            <Link to="/explore" className="rekhta-banner-cta">EXPLORE NOW</Link>
+          </div>
+        </div>
 
-            <div className="hero-action-row">
-              <Link to="/explore" className="btn btn-primary">
-                Explore the archive
-                <ArrowRight size={16} />
-              </Link>
-              <Link to={`/poets/${featuredPoet.id}`} className="hero-secondary-link">
-                Read {featuredPoet.name}
-                <BookOpen size={16} />
-              </Link>
-            </div>
+        {/* Carousel arrows */}
+        <button className="rekhta-banner-arrow left" onClick={prevSlide} aria-label="Previous">
+          <ChevronLeft size={24} />
+        </button>
+        <button className="rekhta-banner-arrow right" onClick={nextSlide} aria-label="Next">
+          <ChevronRight size={24} />
+        </button>
 
-            <div className="hero-stats-grid">
-              {archiveStats.map((stat) => (
-                <div key={stat.label} className="hero-stat-card">
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </div>
-              ))}
+        {/* Dots */}
+        <div className="rekhta-banner-dots">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              className={`rekhta-dot ${i === currentSlide ? 'active' : ''}`}
+              onClick={() => setCurrentSlide(i)}
+              aria-label={`Slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Today's top shayari —  carousel below the banner */}
+      <div className="rekhta-top-section">
+        <h2 className="rekhta-top-title">TODAY'S TOP 5 URDU SHAYARI</h2>
+
+        <div className="rekhta-top-shayari">
+          <div className="rekhta-top-poem">
+            <InteractivePoetryText text={active.text} className="rekhta-top-text" />
+            <div className="rekhta-top-meta">
+              <Link to={`/poets/${active.poetId}`} className="rekhta-top-poet">— {active.poetName}</Link>
+              <span className="rekhta-top-type">{active.type}</span>
             </div>
           </div>
 
-          <div className="hero-feature-stack animate-fade-in-up">
-            <article className="hero-feature-card">
-              <div className="hero-feature-header">
-                <div>
-                  <p className="hero-feature-label">Featured reading</p>
-                  <h2>{featuredWork.title}</h2>
-                </div>
-                <span className="hero-feature-badge">
-                  <Flame size={14} />
-                  Most read
-                </span>
-              </div>
-
-              <InteractivePoetryText text={displayText} className="hero-feature-text" />
-
-              <div className="hero-feature-meta">
-                <span>{featuredPoet.name}</span>
-                <span>{featuredWork.type}</span>
-                <span>{formatCompactLikes(featuredWork.likes)} likes</span>
-              </div>
-            </article>
-
-            <div className="hero-secondary-grid">
-              <div className="hero-secondary-card">
-                <div className="hero-secondary-title">
-                  <Library size={18} />
-                  <span>Featured moods</span>
-                </div>
-                <div className="hero-mood-list">
-                  {featuredMoods.map((mood) => (
-                    <Link key={mood.id} to={`/explore?tag=${mood.name}`} className="hero-mood-pill">
-                      <span>{mood.icon}</span>
-                      {mood.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <div className="hero-secondary-card">
-                <div className="hero-secondary-title">
-                  <TrendingUp size={18} />
-                  <span>Top three today</span>
-                </div>
-                <div className="hero-mini-list">
-                  {poetryOfDayWorks.slice(0, 3).map((work, index) => (
-                    <Link key={work.id} to={`/poets/${work.poetId}`} className="hero-mini-item">
-                      <span className="hero-mini-rank">0{index + 1}</span>
-                      <div>
-                        <strong>{work.title}</strong>
-                        <p>{work.poetName}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div className="rekhta-top-nav">
+            <button onClick={prevSlide} aria-label="Previous poem"><ChevronLeft size={20} /></button>
+            <span>{currentSlide + 1} / {totalSlides}</span>
+            <button onClick={nextSlide} aria-label="Next poem"><ChevronRight size={20} /></button>
           </div>
         </div>
       </div>

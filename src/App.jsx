@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import AuthModal from './components/AuthModal';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Explore from './pages/Explore';
 import PoetsList from './pages/PoetsList';
@@ -289,6 +291,7 @@ export default function App() {
     <div className="app-shell">
       <ScrollToTop />
       <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <AuthModal />
 
       <main className="app-main">
         <Routes>
@@ -331,23 +334,27 @@ export default function App() {
           <Route
             path="/notebook"
             element={
-              <Notebook
-                notebookData={notebookData}
-                onCreateFile={handleCreateNotebookFile}
-                onDeleteFile={handleDeleteNotebookFile}
-                onRenameFile={handleRenameNotebookFile}
-                onSelectFile={handleSetActiveNotebookFile}
-                onUpdateContent={handleUpdateNotebookContent}
-              />
+              <ProtectedRoute>
+                <Notebook
+                  notebookData={notebookData}
+                  onCreateFile={handleCreateNotebookFile}
+                  onDeleteFile={handleDeleteNotebookFile}
+                  onRenameFile={handleRenameNotebookFile}
+                  onSelectFile={handleSetActiveNotebookFile}
+                  onUpdateContent={handleUpdateNotebookContent}
+                />
+              </ProtectedRoute>
             }
           />
           <Route
             path="/saved"
             element={
-              <SavedWorks
-                savedWorks={savedWorks}
-                onRemoveWork={handleRemoveSavedWork}
-              />
+              <ProtectedRoute>
+                <SavedWorks
+                  savedWorks={savedWorks}
+                  onRemoveWork={handleRemoveSavedWork}
+                />
+              </ProtectedRoute>
             }
           />
           <Route path="/dictionary" element={<Dictionary />} />

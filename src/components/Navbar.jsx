@@ -1,76 +1,126 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, Menu, Search, X } from 'lucide-react';
+import { Menu, Search, X, LogOut, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ searchQuery, setSearchQuery }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
+  const { user, isAuthenticated, openAuthModal, logout } = useAuth();
+  const profileRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     setMobileOpen(false);
+    setProfileOpen(false);
   }, [location]);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const isActive = (path) => location.pathname === path;
 
   const links = [
-    { path: '/', label: 'Home' },
-    { path: '/explore', label: 'Explore' },
-    { path: '/dictionary', label: 'Dictionary' },
-    { path: '/poets', label: 'Poets' },
-    { path: '/community', label: 'Community' },
-    { path: '/saved', label: 'Saved' },
-    { path: '/notebook', label: 'Notebook' },
+    { path: '/poets', label: 'POETS' },
+    { path: '/explore', label: 'SHER' },
+    { path: '/dictionary', label: 'DICTIONARY' },
+    { path: '/community', label: 'COMMUNITY' },
+    { path: '/saved', label: 'SAVED' },
+    { path: '/notebook', label: 'NOTEBOOK' },
   ];
 
   return (
     <>
-      <nav className={`site-nav ${scrolled ? 'is-scrolled' : ''}`}>
-        <div className="site-nav-inner">
-          <Link to="/" className="site-brand">
-            <span className="site-brand-mark">S</span>
-            <span className="site-brand-copy">
-              <span className="site-brand-name">Solace</span>
-              <span className="site-brand-tag">Urdu poetry, curated well</span>
-            </span>
+      <nav className={`rekhta-nav ${scrolled ? 'scrolled' : ''}`}>
+        <div className="rekhta-nav-inner">
+          <Link to="/" className="rekhta-logo">
+            <span className="rekhta-logo-text">solace</span>
           </Link>
 
-          <div className="site-nav-links">
+          <div className="rekhta-nav-links">
             {links.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`site-nav-link ${isActive(link.path) ? 'active' : ''}`}
+                className={`rekhta-nav-link ${isActive(link.path) ? 'active' : ''}`}
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          <div className="site-nav-actions">
-            <label className="site-search">
-              <Search size={16} color="currentColor" />
+          <div className="rekhta-nav-right">
+            <div className="rekhta-search">
+              <Search size={16} />
               <input
                 type="text"
-                placeholder="Search poets, ghazals, moods"
+                placeholder="Search"
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </label>
+            </div>
 
-            <Link to="/community" className="site-nav-cta">
-              Share a verse
-              <ArrowRight size={14} />
-            </Link>
+            <Link to="/community" className="rekhta-nav-btn rekhta-nav-btn-lang">ENG</Link>
+
+            {isAuthenticated ? (
+              <div className="nav-profile-wrapper" ref={profileRef}>
+                <button
+                  className="nav-profile-btn"
+                  onClick={() => setProfileOpen((prev) => !prev)}
+                  aria-label="User profile"
+                >
+                  <span className="nav-avatar">{user.initials}</span>
+                </button>
+
+                {profileOpen && (
+                  <div className="nav-profile-dropdown animate-fade-in">
+                    <div className="nav-profile-header">
+                      <span className="nav-avatar nav-avatar-lg">{user.initials}</span>
+                      <div>
+                        <strong>{user.name}</strong>
+                        <p>{user.contact}</p>
+                      </div>
+                    </div>
+                    <div className="nav-profile-divider" />
+                    <Link to="/notebook" className="nav-profile-item" onClick={() => setProfileOpen(false)}>
+                      <User size={16} />
+                      My Notebook
+                    </Link>
+                    <Link to="/saved" className="nav-profile-item" onClick={() => setProfileOpen(false)}>
+                      <User size={16} />
+                      Saved Works
+                    </Link>
+                    <div className="nav-profile-divider" />
+                    <button className="nav-profile-item nav-profile-logout" onClick={logout}>
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button className="rekhta-nav-btn" onClick={() => openAuthModal()}>
+                LOG IN
+              </button>
+            )}
 
             <button
-              className="site-menu-btn"
+              className="rekhta-mobile-btn"
               onClick={() => setMobileOpen((prev) => !prev)}
               aria-label="Toggle menu"
               type="button"
@@ -81,46 +131,62 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
         </div>
       </nav>
 
+      {/* Mobile drawer */}
       <div
-        className={`site-drawer-backdrop ${mobileOpen ? 'open' : ''}`}
+        className={`rekhta-drawer-bg ${mobileOpen ? 'open' : ''}`}
         onClick={() => setMobileOpen(false)}
       />
-
-      <aside className={`site-drawer ${mobileOpen ? 'open' : ''}`}>
-        <div className="site-drawer-header">
-          <div>
-            <div className="site-drawer-title">Solace</div>
-            <p className="site-drawer-copy">A calmer way to browse poets, poems, and shared writing.</p>
-          </div>
-          <button className="site-menu-btn" onClick={() => setMobileOpen(false)} type="button">
+      <aside className={`rekhta-drawer ${mobileOpen ? 'open' : ''}`}>
+        <div className="rekhta-drawer-head">
+          <span className="rekhta-logo-text" style={{ fontSize: '1.6rem' }}>solace</span>
+          <button onClick={() => setMobileOpen(false)} type="button">
             <X size={20} />
           </button>
         </div>
 
-        <label className="site-search site-search-drawer">
-          <Search size={16} color="currentColor" />
+        {isAuthenticated && (
+          <div className="rekhta-drawer-user">
+            <span className="nav-avatar">{user.initials}</span>
+            <div>
+              <strong>{user.name}</strong>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user.contact}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="rekhta-search" style={{ width: '100%' }}>
+          <Search size={16} />
           <input
             type="text"
-            placeholder="Search the archive"
+            placeholder="Search poets, ghazals, moods"
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </label>
+        </div>
 
         {links.map((link) => (
           <Link
             key={link.path}
             to={link.path}
-            className={`site-drawer-link ${isActive(link.path) ? 'active' : ''}`}
+            className={`rekhta-drawer-link ${isActive(link.path) ? 'active' : ''}`}
           >
             {link.label}
           </Link>
         ))}
 
-        <Link to="/community" className="site-nav-cta site-drawer-cta">
-          Start writing
-          <ArrowRight size={14} />
-        </Link>
+        {isAuthenticated ? (
+          <button className="rekhta-drawer-link" onClick={logout} style={{ marginTop: 'auto' }}>
+            Sign Out
+          </button>
+        ) : (
+          <button
+            className="btn btn-primary"
+            style={{ margin: 'var(--space-md) 0', width: '100%' }}
+            onClick={() => { setMobileOpen(false); openAuthModal(); }}
+          >
+            LOG IN
+          </button>
+        )}
       </aside>
     </>
   );
