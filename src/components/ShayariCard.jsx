@@ -16,7 +16,14 @@ import { getCleanText, repairMojibake } from '../utils/text';
 import InteractivePoetryText from './InteractivePoetryText';
 import AudioPlayer from './AudioPlayer';
 
-export default function ShayariCard({ shayari, poetName, poetId, showRoman = true, onSaveWork }) {
+export default function ShayariCard({
+  shayari,
+  poetName,
+  poetId,
+  poetPath,
+  showRoman = true,
+  onSaveWork,
+}) {
   const [bookmarked, setBookmarked] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const [showAlternateScript, setShowAlternateScript] = useState(false);
@@ -31,6 +38,7 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
   const secondaryText = showAlternateScript ? shayari.text : alternateScript;
   const shareTitle = `${shayari.title} - ${poetName}`;
   const shareText = getCleanText(repairedRoman, shayari.text);
+  const profilePath = poetPath || `/poets/${poetId}`;
 
   const glossaryEntries = useMemo(() => {
     const seen = new Set();
@@ -212,7 +220,7 @@ export default function ShayariCard({ shayari, poetName, poetId, showRoman = tru
 
       <div className="shayari-meta">
         <Link
-          to={`/poets/${poetId}`}
+          to={profilePath}
           className="shayari-poet"
           onClick={(event) => event.stopPropagation()}
         >

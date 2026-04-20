@@ -8,6 +8,14 @@ function generateUserId() {
   return `user-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function slugify(value = '') {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function getInitials(name) {
   if (!name) return '?';
   const parts = name.trim().split(/\s+/);
@@ -45,12 +53,17 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   const login = useCallback((userData) => {
+    const normalizedContact = userData.contact.trim().toLowerCase();
+    const isAdmin = normalizedContact === 'admin@solace.com';
     const newUser = {
       id: generateUserId(),
       name: userData.name,
       contact: userData.contact,
       contactType: userData.contactType, // 'email' or 'phone'
       initials: getInitials(userData.name),
+      slug: slugify(userData.name),
+      roles: isAdmin ? ['admin', 'moderator'] : ['author'],
+      isAdmin,
       createdAt: Date.now(),
     };
     setUser(newUser);

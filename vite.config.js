@@ -1,7 +1,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { fallbackNewsArticles as localFallbackArticles } from './src/data/newsFallback.js';
 
-const localFallbackArticles = [
+const legacyLocalFallbackArticles = [
   {
     id: 'fallback-mushaira-archives',
     title: 'How Digital Archives Are Bringing Classical Urdu Poetry to New Readers',

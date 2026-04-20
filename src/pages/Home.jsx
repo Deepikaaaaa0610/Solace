@@ -14,6 +14,7 @@ import PoetCard from '../components/PoetCard';
 import ShayariCard from '../components/ShayariCard';
 import CommunityPost from '../components/CommunityPost';
 import LatestNewsSection from '../components/LatestNewsSection';
+import { fallbackNewsArticles } from '../data/newsFallback';
 import { poets, getAllWorks } from '../data/poets';
 import { categories } from '../data/shayaris';
 
@@ -64,6 +65,13 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSav
     let active = true;
 
     async function loadNews() {
+      if (import.meta.env.PROD) {
+        setNewsArticles(fallbackNewsArticles);
+        setNewsError('');
+        setNewsLoading(false);
+        return;
+      }
+
       try {
         setNewsLoading(true);
         setNewsError('');
@@ -78,9 +86,10 @@ export default function Home({ communityPosts, onLikePost, onBookmarkPost, onSav
         if (active) {
           setNewsArticles(data.articles || []);
         }
-      } catch (error) {
+      } catch {
         if (active) {
-          setNewsError(error instanceof Error ? error.message : 'Unable to fetch poetry news.');
+          setNewsArticles(fallbackNewsArticles);
+          setNewsError('');
         }
       } finally {
         if (active) {

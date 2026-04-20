@@ -12,6 +12,9 @@ import Community from './pages/Community';
 import Notebook from './pages/Notebook';
 import SavedWorks from './pages/SavedWorks';
 import Dictionary from './pages/Dictionary';
+import SubmissionHub from './pages/SubmissionHub';
+import AuthorProfile from './pages/AuthorProfile';
+import AdminModeration from './pages/AdminModeration';
 import { initialCommunityPosts } from './data/communityPosts';
 
 function createNotebookFile(name = 'My Notebook') {
@@ -321,6 +324,10 @@ export default function App() {
             element={<PoetProfile onSaveWork={handleSaveWork} />}
           />
           <Route
+            path="/authors/:slug"
+            element={<AuthorProfile onSaveWork={handleSaveWork} />}
+          />
+          <Route
             path="/community"
             element={
               <Community
@@ -354,6 +361,22 @@ export default function App() {
                   savedWorks={savedWorks}
                   onRemoveWork={handleRemoveSavedWork}
                 />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/submissions"
+            element={
+              <ProtectedRoute>
+                <SubmissionHub />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/moderation"
+            element={
+              <ProtectedRoute>
+                <AdminModeration />
               </ProtectedRoute>
             }
           />

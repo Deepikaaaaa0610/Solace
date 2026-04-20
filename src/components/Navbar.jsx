@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, Search, X, LogOut, User } from 'lucide-react';
+import { Menu, Search, X, LogOut, User, ShieldCheck, MessageCircleMore } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useWhatsappFeature } from '../context/WhatsappFeatureContext';
 
 export default function Navbar({ searchQuery, setSearchQuery }) {
   const [scrolled, setScrolled] = useState(false);
@@ -9,6 +10,7 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const { user, isAuthenticated, openAuthModal, logout } = useAuth();
+  const { currentAuthor } = useWhatsappFeature();
   const profileRef = useRef(null);
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
   const links = [
     { path: '/poets', label: 'POETS' },
     { path: '/explore', label: 'SHER' },
+    { path: '/submissions', label: 'WHATSAPP' },
     { path: '/dictionary', label: 'DICTIONARY' },
     { path: '/community', label: 'COMMUNITY' },
     { path: '/saved', label: 'SAVED' },
@@ -105,6 +108,22 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
                       <User size={16} />
                       Saved Works
                     </Link>
+                    <Link to="/submissions" className="nav-profile-item" onClick={() => setProfileOpen(false)}>
+                      <MessageCircleMore size={16} />
+                      WhatsApp Hub
+                    </Link>
+                    {currentAuthor && (
+                      <Link to={`/authors/${currentAuthor.slug}`} className="nav-profile-item" onClick={() => setProfileOpen(false)}>
+                        <User size={16} />
+                        Author Page
+                      </Link>
+                    )}
+                    {user?.isAdmin && (
+                      <Link to="/admin/moderation" className="nav-profile-item" onClick={() => setProfileOpen(false)}>
+                        <ShieldCheck size={16} />
+                        Moderation
+                      </Link>
+                    )}
                     <div className="nav-profile-divider" />
                     <button className="nav-profile-item nav-profile-logout" onClick={logout}>
                       <LogOut size={16} />
