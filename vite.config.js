@@ -254,8 +254,17 @@ function poetryNewsApi(mode) {
   };
 }
 
+function getBasePath(mode) {
+  if (mode !== 'production') {
+    return '/';
+  }
+
+  const env = loadEnv(mode, process.cwd(), '');
+  return env.VERCEL === '1' ? '/' : '/Solace/';
+}
+
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/Solace/' : '/',
+  base: getBasePath(mode),
   plugins: [react(), poetryNewsApi(mode)],
   server: {
     port: 5173,
