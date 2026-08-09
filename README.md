@@ -13,7 +13,7 @@
 
 Solace is an archive-first poetry platform for Urdu, Hindi, and South Asian literature — inspired by [Rekhta](https://rekhta.org). It brings together classical ghazals, shers, nazms, and community writing in one modern reading experience, with a built-in dictionary, personal notebook, audio recitation, and curated discovery tools.
 
-## ✨ Features
+## Features
 
 ### Reading & Discovery
 - **Poet Profiles** — biographies, eras, birth places, and complete works for legendary poets like Mirza Ghalib, Faiz Ahmed Faiz, Allama Iqbal, and more.
@@ -47,7 +47,7 @@ Solace is an archive-first poetry platform for Urdu, Hindi, and South Asian lite
 - **SPA Routing** — GitHub Pages-compatible 404 redirect script for client-side routing.
 - **CI/CD** — GitHub Actions workflow for automated build and deploy to GitHub Pages on push to `main`.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer        | Technology                                              |
 | ------------ | ------------------------------------------------------- |
@@ -62,7 +62,7 @@ Solace is an archive-first poetry platform for Urdu, Hindi, and South Asian lite
 | Deployment   | GitHub Pages, Vercel-ready                              |
 | Backend (planned) | Node.js + PostgreSQL                              |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Solace/
@@ -132,7 +132,7 @@ Solace/
 └── index.html                      # App entry HTML
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -183,7 +183,7 @@ npm run build
 npm run preview
 ```
 
-## 🌐 Deployment
+## Deployment
 
 ### GitHub Pages
 
@@ -193,7 +193,7 @@ Automated via GitHub Actions — push to `main` triggers build and deploy. The w
 
 The app auto-detects Vercel deployments and adjusts the base path accordingly. Simply connect the repo to Vercel and deploy — no additional configuration needed.
 
-## 🗺 Roadmap
+## Roadmap
 
 The project follows a phased build plan (detailed in `docs/solace-rekhta-roadmap.md`):
 
@@ -205,7 +205,7 @@ The project follows a phased build plan (detailed in `docs/solace-rekhta-roadmap
 | **4 — Community** | Real auth, posting, commenting, moderation | 🟡 Frontend scaffolded |
 | **WhatsApp Ingestion** | WhatsApp → webhook → moderation → public profile | 🟡 Designed, frontend built |
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/your-feature`)
@@ -219,6 +219,3 @@ This project is open source. See individual file headers for details.
 
 ---
 
-<p align="center">
-  <em>Made with ❤️ for poetry lovers everywhere.</em>
-</p>
